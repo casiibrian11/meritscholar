@@ -26,11 +26,23 @@ use App\Models\StudentInformation;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $data = $request->all();
+        $data['sy_id'] = $data['sy_id'] ?? '';
+
+        $data['school_years'] = SchoolYear::orderBy('semester', 'ASC')->orderBy('start_year', 'ASC')->get();
+
         $query = new StudentInformation;
 
         $gender = $query->with('users')
+                        ->when(!empty($data['sy_id']), function($query) use ($data) {
+                            $query->whereHas('users', function($query) use ($data) {
+                                $query->whereHas('applications', function($query) use ($data) {
+                                    $query->where('sy_id', $data['sy_id']);
+                                });
+                            });
+                        })
                         ->whereHas('users', function($query) {
                             $query->where('user_type', 'student');
                         })
@@ -41,6 +53,13 @@ class DashboardController extends Controller
                         ->toArray();
 
         $sex = $query->with('users')
+                    ->when(!empty($data['sy_id']), function($query) use ($data) {
+                        $query->whereHas('users', function($query) use ($data) {
+                            $query->whereHas('applications', function($query) use ($data) {
+                                $query->where('sy_id', $data['sy_id']);
+                            });
+                        });
+                    })
                     ->whereHas('users', function($query) {
                         $query->where('user_type', 'student');
                     })
@@ -50,11 +69,22 @@ class DashboardController extends Controller
                     ->get()
                     ->toArray();
 
+        $applications = Application::where('completed', true)
+                            ->when(!empty($data['sy_id']), function($query) use ($data) {
+                                $query->where('sy_id', $data['sy_id']);
+                            })
+                            ->selectRaw('COUNT(created_at) AS count, DATE(created_at) AS date')
+                            ->groupBy('date')
+                            ->get()
+                            ->toArray();
+
         
         $genderLabels = [];
         $genderCounts = [];
         $sexLabels = [];
         $sexCounts = [];
+        $applicationLabels = [];
+        $applicationCounts = [];
 
         foreach ($gender as $key => $value) {
             
@@ -78,11 +108,20 @@ class DashboardController extends Controller
             $sexCounts[] = $sexCount;
         }
 
+        foreach ($applications as $key => $value) {
+            $applicationCount = $applications[$key]['count'];
+            $applicationsLabels[] = now()->parse($applications[$key]['date'])->format('M j, Y');
+            $applicationsCounts[] = $applicationCount;
+        }
+
         $data['genderLabels'] = $genderLabels;
         $data['genderCounts'] = $genderCounts;
 
         $data['sexLabels'] = $sexLabels;
         $data['sexCounts'] = $sexCounts;
+
+        $data['applicationsLabels'] = $applicationsLabels;
+        $data['applicationsCounts'] = $applicationsCounts;
 
         return view('dashboard', compact('data'));
     }
