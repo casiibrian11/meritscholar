@@ -184,7 +184,15 @@ class ApplicationsController extends Controller
                                     ->with('school_years')
                                     ->with('scholarship_offers')
                                     ->where('completed', true)
-                                    ->when(empty($filters), function($q) {
+                                    ->when(!empty($data['keyword']), function($query) use ($data) {
+                                        $query->whereHas('users', function ($query) use ($data) {
+                                            $query->where('first_name', 'LIKE', "%{$data['keyword']}%")
+                                                ->orWhere('middle_name', 'LIKE', "%{$data['keyword']}%")
+                                                ->orWhere('last_name', 'LIKE', "%{$data['keyword']}%")
+                                                ->orWhere('email', 'LIKE', "%{$data['keyword']}%");
+                                        });
+                                    })
+                                    ->when(empty($filters) && empty($data['keyword']), function($q) {
                                         $q->whereNull('approved');
                                     })
                                     ->when(!empty($scholarshipId), function($query) use ($scholarshipId) {

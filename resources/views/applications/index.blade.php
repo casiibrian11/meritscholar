@@ -17,6 +17,15 @@
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-sm-12">
+                    <form action="" method="GET">
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Search (name or email)..." name="keyword" 
+                                value="@if (!empty($data['keyword'])){{ $data['keyword'] }}@endif">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit"><i class="fa fa-search"></i> Search</button>
+                            </div>
+                        </div>
+                    </form>
                     @if (count($data['school_years']) > 0)
                         <div class="btn-group mb-2" role="group" aria-label="Active">
                             <a href="/scholarship/applications" 
