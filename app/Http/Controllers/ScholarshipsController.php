@@ -1,0 +1,508 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Db;
+use Illuminate\Support\Facades\Storage;
+
+use App\Libraries\AppHelper;
+use App\Models\Scholarship;
+use App\Models\Requirement;
+use App\Models\SchoolYear;
+use App\Models\ScholarshipOffer;
+use App\Models\ApplicationDetail;
+use App\Models\Application;
+use App\Models\Course;
+use App\Models\Note;
+use App\Models\SubmittedRequirement;
+use App\Http\Requests\ScholarshipsRequest;
+use App\Http\Requests\ApplicationDetailsRequest;
+
+class ScholarshipsController extends Controller
+{
+    public function index(Request $request)
+    {
+        $data = $request->all();
+        $data['visible'] = $data['visible'] ?? '';
+        $data['deleted'] = $data['deleted'] ?? '';
+
+        $data['scholarships'] = Scholarship::when(!empty($data['deleted']), function($query){
+                                    $query->onlyTrashed();
+                                })
+                                ->when(!empty($data['visible']) && $data['visible'] == 'yes', function($query){
+                                    $query->where('visible', true);
+                                })
+                                ->when(!empty($data['visible']) && $data['visible'] == 'no', function($query){
+                                    $query->where('visible', false);
+                                })
+                                ->orderBy('id', 'DESC')
+                                ->paginate(10);
+        
+        $data['requirements'] = Requirement::orderBy('id', 'DESC')->get();
+
+        $array = [];
+        foreach ($data['requirements'] as $requirement) {
+            $array[$requirement['id']] = $requirement->toArray();
+        }
+
+        $data['array'] = $array;
+                    
+        if (!empty($data['scholarships']->total())) {
+            $data['scholarships'] = $data['scholarships']->appends($request->except('page'));
+        }
+
+        return view('scholarships.index', compact('data'));
+    }
+
+    public function save(ScholarshipsRequest $request)
+    {
+        $key = $request->safe()->only(['id']);
+        $validated = $request->safe()->except(['id']);
+
+        $dataToMerge = [
+            'user_id' => Auth::user()->id
+        ];
+
+        $validated['description'] = strtolower($validated['description']);
+        $validated['requirements'] = implode(',', $validated['requirements']);
+
+        $data = array_merge($validated, $dataToMerge);
+
+        $scholarship = Scholarship::where('description', $data['description'])->first();
+            
+        try {
+
+            if(isset($key['id'])) {
+                
+                if (!empty($scholarship) && $scholarship['id'] <> $key['id']) {
+                    return response()->json(['error' => AppHelper::exists()]);
+                }
+                Scholarship::where('id', $key['id'])->update($data);
+                $message = AppHelper::updated();
+                
+            } else {
+
+                if (!empty($scholarship)) {
+                    return response()->json(['error' => AppHelper::exists()]);
+                }
+
+                Scholarship::create($data);
+                $message = AppHelper::saved();
+                
+            }
+            
+            return response()->json([
+                'success' => $message,
+            ]);
+
+        } catch(QueryException $e) {
+            return response()->json(['error' => $e->errorInfo[2]]);
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        $id = $request->input('id');
+        $data = Scholarship::find($id);
+
+        try {
+
+            $data->forceDelete();
+
+            return response()->json([
+                'success' => AppHelper::deleted(),
+            ]);
+
+        } catch(QueryException $e) {
+            
+            $data->update([ 'deleted_at' => now() ]);
+
+            return response()->json([
+                'success' => AppHelper::archived(),
+            ]);
+            
+        }
+    }
+
+    public function visibility(Scholarship $scholarship)
+    {
+        if ($scholarship['visible']) {
+            $status = false;
+        } else {
+            $status = true;
+        }
+
+        $scholarship->update(['visible' => $status]);
+
+        return redirect('/scholarships')->with('success', AppHelper::updated());
+    }
+
+    public function restore($id)
+    {
+        $scholarship = Scholarship::withTrashed()->where('id', $id)->restore();
+        return redirect('/scholarships')->with('success', AppHelper::restored());
+    }
+
+    public function selectSchoolYear(Request $request)
+    {
+        $data = SchoolYear::where('active', true)->where('visible', true)->get();
+
+        return view('frontend.school-years.index', compact('data'));
+    }
+
+    public function scholarships(Request $request, SchoolYear $sy)
+    {
+        if (!$sy['visible'] || !$sy['active']) {
+            abort(401);
+        }
+
+        $data['sy_id'] = $sy['id'];
+
+        $data['offers'] = ScholarshipOffer::with('scholarships')
+                                    ->where('sy_id', $sy['id'])
+                                    ->where('active', true)
+                                    ->orderBy('id', 'ASC')
+                                    ->get();
+        
+        $data['applications'] = Application::where('sy_id', $data['sy_id'])
+                                    ->where('user_id', Auth::user()->id)
+                                    ->get();
+
+        $requirements = Requirement::where('visible', true)->get();
+        
+        $requirementsArray = [];
+        foreach ($requirements as $requirement) {
+            $requirementsArray[$requirement['id']] = $requirement->toArray();
+        }
+
+        $data['requirements'] = $requirementsArray;
+
+        return view('frontend.scholarships.list', compact('data'));
+    }
+
+    public function application(Request $request, SchoolYear $sy)
+    {
+        if (!$sy['visible'] || !$sy['active']) {
+            abort(401);
+        }
+
+        $data['sy'] = $sy;
+        $data['sy_id'] = $sy['id'];
+        $data['user_id'] = Auth::user()->id;
+
+        $data['courses'] = Course::where('visible', true)->orderBy('course_name', 'ASC')->get();
+
+        $data['detail'] = ApplicationDetail::where('sy_id', $data['sy_id'])
+                                    ->where('user_id', $data['user_id'])
+                                    ->first();
+
+        $query = Application::where('sy_id', $data['sy_id'])->where('user_id', $data['user_id']);
+                                    
+        $ids = $query->pluck('scholarship_offer_id')->toArray();
+        $data['applications'] = $query->with('scholarship_offers')->with('school_years')->get();
+
+        $data['offers'] = ScholarshipOffer::with('scholarships')
+                                ->where('sy_id', $sy['id'])
+                                ->where('active', true)
+                                ->whereNotIn('id', $ids)
+                                ->orderBy('id', 'ASC')
+                                ->get();
+        
+
+        return view('frontend.scholarships.application', compact('data'));
+    }
+
+    public function requirements(Request $request, SchoolYear $sy, Application $application)
+    {
+        if (!$sy['visible'] || !$sy['active']) {
+            abort(401);
+        }
+
+        $data['notes'] = Note::where('application_id', $application['id'])->orderBy('id', 'DESC')->get();
+
+        $data['sy_id'] = $sy['id'];
+        $data['user_id'] = Auth::user()->id;
+
+        $data['sy'] = $sy;
+        $data['application'] = Application::where('id', $application['id'])
+                                    ->where('user_id', $data['user_id'])
+                                    ->with('scholarship_offers')
+                                    ->first();
+        
+        $query = Requirement::where('visible', true);
+        $data['requirements'] = $query->get();
+        $data['submitted'] = SubmittedRequirement::where('application_id', $application['id'])
+                                        ->where('user_id', $data['user_id'])
+                                        ->get();
+
+        $array = [];
+        $array2 = [];
+
+        foreach ($data['requirements'] as $requirement) {
+            $array[$requirement['id']] = $requirement->toArray();
+        }
+
+        foreach ($data['submitted'] as $submitted) {
+            $array2[$submitted['requirement_id']] = $submitted->toArray();
+        }
+
+        $data['requirements'] = $array;
+        $data['submitted'] = $array2;
+
+        $requirements = $application['scholarship_offers']['scholarships']['requirements'];
+        $ids = explode(',', $requirements);
+
+        $required = $query->whereIn('id', $ids)
+                        ->where('required', true)
+                        ->count();
+        $submitted = count($data['submitted']);
+
+        $data['ok'] = false;
+        if ($submitted >= $required) {
+            $data['ok'] = true;
+        }
+
+        return view('frontend.scholarships.requirements', compact('data'));
+    }
+
+    public function storeRequirements(Request $request)
+    {
+        $data = $request->all();
+        $attachments = $data['attachment'];
+        $applicationId = $data['application_id'] ?? '';
+        $userId = Auth::user()->id;
+
+        if (empty($applicationId)) {
+            return redirect()->back()->with('error', "Unauthorized server request!");
+        }
+
+        foreach ($attachments as $requirement_id => $attachment) {
+
+            $requirement = Requirement::where('id', $requirement_id)->first();
+            $submitted = SubmittedRequirement::where('user_id', $userId)
+                                    ->where('application_id', $applicationId)
+                                    ->where('requirement_id', $requirement_id)
+                                    ->first();
+            
+            if (empty($requirement)) {
+                continue;
+            }
+            
+            if ($requirement['required'] && empty($attachment) && empty($submitted)) {
+                return redirect()->back()->with('error', "You must submit all required attachments.");
+            }
+            
+            $hasFile = false;
+        
+            if (is_object($attachments[$requirement_id])) {
+                $hasFile = $attachments[$requirement_id]->isValid();
+            }
+
+            if ($hasFile) {
+                $filenameWithExtension = $attachments[$requirement_id]->getClientOriginalName();
+                $file = pathinfo($filenameWithExtension, PATHINFO_FILENAME);
+                $extension = $attachments[$requirement_id]->getClientOriginalExtension();
+                $attachment = $file.'_'.time().''.rand(10000,99999).'.'.$extension;
+
+                $size = ($attachments[$requirement_id]->getSize() / 1024);
+                if ($size > 2048) {
+                    return redirect()->back()->with('error', "Attachment must not be larger than 2MB.");
+                }
+
+                // Validating file formats
+                if (!empty($requirement['file_type'])) {
+                    $fileTypes = explode(',', $requirement['file_type']);
+                    if (!in_array($extension, $fileTypes)) {
+                        return redirect()->back()->with('error', "It seems like you submitted invalid file type. See requirement's allowed file types.");
+                    }
+                }
+
+                // Upload image
+                $path = $attachments[$requirement_id]->storeAs('public/submitted-requirements', $attachment);
+            }
+
+            // Delete files
+            if (!empty($submitted)) {
+                $file = $submitted['attachment'];
+                if (!empty($file)) {
+                    $filex   = 'public/submitted-requirements/'.$file;
+                    if (Storage::exists($filex)) {
+                        Storage::delete($filex);   
+                    }
+                }
+            }
+            
+            if (empty($submitted)) {
+                
+                SubmittedRequirement::create([
+                    'application_id' => $applicationId,
+                    'requirement_id' => $requirement_id,
+                    'user_id' => $userId,
+                    'attachment' => $attachment
+                ]);
+
+            } else {
+
+                if (empty($attachment)) {
+                    $attachment = $submitted['attachment'];
+                }
+
+                if (!is_null($submitted['request_to_change'])) {
+                    $submitted->update([
+                        'attachment' => $attachment,
+                        'request_to_change' => false
+                    ]);
+                } else {
+                    $submitted->update(['attachment' => $attachment]);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', "Requirements has been submitted. Check your attachments before completing your application.");
+    }
+
+    public function removeAttachment(SubmittedRequirement $requirement)
+    {
+        $userId = Auth::user()->id;
+        if ($requirement['user_id'] <> $userId) {
+            abort(401);
+        }
+
+        try {
+
+            $requirement->delete();
+            
+            if (!empty($requirement['attachment'])) {
+                $file = $requirement['attachment'];
+                $filex   = 'public/submitted-requirements/'.$file;
+                if (Storage::exists($filex)) {
+                    Storage::delete($filex);   
+                }
+            }
+
+            return redirect()->back()->with('success', "Attachment has been removed.");
+
+        } catch(QueryException $e) {
+            return redirect()->back()->with('error', "A problem occurred while processing your request. Reload page then try again.");
+        }
+    }
+
+    public function completeApplication(Request $request)
+    {
+        $data = $request->all();
+        $userId = Auth::user()->id;
+        $id = $data['id'] ?? '';
+        $sy_id = $data['sy_id'] ?? '';
+
+        if (empty($id) || empty($sy_id)) {
+            return redirect()->back()->with('error', "Invalid request! Reload page then try again.");
+        }
+
+        $application = Application::where('id', $id)
+                                    ->where('user_id', $userId)
+                                    ->with('scholarship_offers')
+                                    ->first();
+
+        $requirements = $application['scholarship_offers']['scholarships']['requirements'];
+        $ids = explode(',', $requirements);
+        
+        $required = Requirement::whereIn('id', $ids)
+                            ->where('visible', true)
+                            ->where('required', true)
+                            ->count();
+
+        $needsUpdate = SubmittedRequirement::where('application_id', $id)
+                            ->where('user_id', $userId)
+                            ->where('request_to_change', true)
+                            ->count();
+        
+        if ($needsUpdate > 0) {
+            return redirect()->back()->with('error', "Comply to requested updates first!");
+        }
+        
+        $submitted = SubmittedRequirement::where('application_id', $id)
+                            ->where('user_id', $userId)
+                            ->count();
+
+        if ($submitted < $required) {
+            $lacking = ($required - $submitted);
+            return redirect()->back()->with('error', "The system detected that you still lack ({$lacking}) of the required attachments. Check your attachments.");
+        }
+
+        if (!is_null($application['request_to_change'])) {
+            $application->update([
+                'completed' => true,
+                'request_to_change' => false,
+                'under_review' => null
+            ]);
+        } else {
+            $application->update([
+                'completed' => true,
+                'under_review' => null
+            ]);
+        }
+
+        
+        return redirect()->back()->with('success', "You're application has been submitted. Wait for notifications to your email regarding your application.");
+    }
+
+
+    public function applicationSave(ApplicationDetailsRequest $request)
+    {
+        $key = $request->safe()->only(['id']);
+        $validated = $request->safe()->except(['id']);
+
+        $dataToMerge = [
+            'user_id' => Auth::user()->id
+        ];
+
+        $data = array_merge($validated, $dataToMerge);
+            
+        try {
+            if(isset($key['id'])) {
+                ApplicationDetail::where('id', $key['id'])->update($data);
+                $message = AppHelper::updated();
+            } else {
+                ApplicationDetail::create($data);
+                $message = AppHelper::saved();    
+            }
+
+            return redirect()->back()->with(['success' => $message]);
+
+        } catch(QueryException $e) {
+            return redirect()->back()->with(['error' => $e->errorInfo[2]]);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->all();
+
+        if (empty($data['offers'])) {
+            return redirect()->back()->with(['error' => "Select from the options first!"]);
+        }
+        
+        $offers = ScholarshipOffer::whereIn('id', $data['offers'])
+                                ->where('active', true)
+                                ->get();
+
+        foreach ($offers as $offer) {
+            if (now()->parse($offer['date_to'])->lt(now())) {
+                continue;
+            }
+
+            Application::create([
+                'scholarship_offer_id' => $offer['id'],
+                'sy_id' => $offer['sy_id'],
+                'user_id' => Auth::user()->id,
+            ]);
+        }
+
+        return redirect()->back();
+    }
+}
