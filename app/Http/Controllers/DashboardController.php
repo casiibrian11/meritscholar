@@ -57,13 +57,25 @@ class DashboardController extends Controller
         $sexCounts = [];
 
         foreach ($gender as $key => $value) {
-            $genderLabels[] = $gender[$key]['gender'];
-            $genderCounts[] = $gender[$key]['count'];
+            
+            $genderCount = $gender[$key]['count'];
+
+            $percentage[$key] = ($genderCount / count($gender)) * 100;
+            $percentage[$key] = number_format($percentage[$key]);
+            $genderLabels[] = ucwords($gender[$key]['gender'])." ({$percentage[$key]}%)";
+            
+            $genderCounts[] = $genderCount;
         }
 
         foreach ($sex as $key => $value) {
-            $sexLabels[] = ucwords($sex[$key]['sex']);
-            $sexCounts[] = $sex[$key]['count'];
+            
+            $sexCount = $sex[$key]['count'];
+
+            $percentage[$key] = ($sexCount / count($sex)) * 100;
+            $percentage[$key] = number_format($percentage[$key]);
+            $sexLabels[] = ucwords($sex[$key]['sex'])." ({$percentage[$key]}%)";
+
+            $sexCounts[] = $sexCount;
         }
 
         $data['genderLabels'] = $genderLabels;
