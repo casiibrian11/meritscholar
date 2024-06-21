@@ -33,13 +33,13 @@
                         </div>
 
                         <div class="row mb-1">
-                            <label for="middle_name" class="col-md-4 col-form-label text-md-end">{{ __('Middle name') }} <span class="required">*</span></label>
+                            <label for="middle_name" class="col-md-4 col-form-label text-md-end">{{ __('Middle name') }}</label>
 
                             <div class="col-md-6">
                                 <input id="middle_name" type="text" 
                                     class="form-control @error('middle_name') is-invalid @enderror" 
                                     name="middle_name" value="{{ old('middle_name') }}" 
-                                    required autocomplete="off" autofocus
+                                    autocomplete="off" autofocus
                                     placeholder="Middle name...">
 
                                 @error('middle_name')

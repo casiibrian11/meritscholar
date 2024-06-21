@@ -25,7 +25,7 @@ class AccountRequest extends FormRequest
     {
         return [
             'first_name' => 'required|string',
-            'middle_name' => 'required|string',
+            'middle_name' => 'nullable|string',
             'last_name' => 'required|string',
             'name_extension' => 'nullable',
         ];

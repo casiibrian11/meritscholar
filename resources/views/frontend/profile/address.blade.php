@@ -122,7 +122,7 @@
                     <br>
 
                     <label>PUROK | STREET | HOUSE # | BUILDING | SUBDIVISION:</label>
-                    <input type="text" class="uppercase" name="address_line" value="{{ $info['address_line'] ?? '' }}" required>
+                    <input type="text" class="uppercase" name="address_line" value="{{ $info['address_line'] ?? '' }}">
 
                     <div class="row">
                         <div class="col-sm-6">

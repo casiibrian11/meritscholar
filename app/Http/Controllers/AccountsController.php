@@ -51,8 +51,7 @@ class AccountsController extends Controller
         $userId = Auth::user()->id;
         $validated = $request->validated();
 
-        User::where('id', $userId)
-            ->update($validated);
+        User::where('id', $userId)->update($validated);
 
         return redirect('/profile')->with('success', "Your account has been updated.");
     }
@@ -105,6 +104,11 @@ class AccountsController extends Controller
                 $redirect = '/additional-information';
             } else {
                 $data['completed'] = true;
+                
+                if (empty($data['student_id'])) {
+                    return redirect()->back()->with('error', 'ID Number must not be empty.');
+                }
+
                 $redirect = '/profile';
             }
 

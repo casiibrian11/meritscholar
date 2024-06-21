@@ -94,11 +94,11 @@
                     <input type="hidden" name="id" value="{{ $info['id'] ?? '' }}" readonly>
 
                     <label>LEARNERS REFERENCE NUMBER:</label>
-                    <input type="text" name="learner_reference_number" value="{{ $info['learner_reference_number'] ?? '' }}" required>
+                    <input type="text" name="learner_reference_number" value="{{ $info['learner_reference_number'] ?? '' }}">
                     <br>
 
                     <label>ATM ACCOUNT NUMBER:</label>
-                    <input type="text" name="atm_account_number" value="{{ $info['atm_account_number'] ?? '' }}" required>
+                    <input type="text" name="atm_account_number" value="{{ $info['atm_account_number'] ?? '' }}">
                     <br>
 
                     <label>STUDENT ID/NUMBER:</label>

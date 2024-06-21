@@ -79,16 +79,16 @@
                     @csrf
                     <h2 class="border-bottom border-white p-0 pb-2"><b>Account Information</b></h2>
                     <label>LAST NAME:</label>
-                    <input type="text" name="last_name" value="{{ Auth::user()->last_name }}" required>
+                    <input type="text" name="last_name" style="text-transform:uppercase" value="{{ Auth::user()->last_name }}" required>
 
                     <label>FIRST NAME:</label>
-                    <input type="text" name="first_name" value="{{ Auth::user()->first_name }}" required>
+                    <input type="text" name="first_name" style="text-transform:uppercase" value="{{ Auth::user()->first_name }}" required>
 
                     <label>MIDDLE NAME:</label>
-                    <input type="text" name="middle_name" value="{{ Auth::user()->middle_name }}" required>
+                    <input type="text" name="middle_name" style="text-transform:uppercase" value="{{ Auth::user()->middle_name }}">
 
                     <label>NAME EXTENSION:</label>
-                    <input type="text" name="name_extension" value="{{ Auth::user()->name_extension }}">
+                    <input type="text" name="name_extension" style="text-transform:uppercase" value="{{ Auth::user()->name_extension }}">
 
                     <p class="text-right" style="text-align:right;">
                         <button type="submit" class="btn btn-primary w-50">
