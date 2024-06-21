@@ -20,7 +20,7 @@
                 </button>
             </div>
             <div class="card-body">
-                <div class="btn-group mb-2" role="group" aria-label="Active">
+                <div class="btn-group mb-2 d-none" role="group" aria-label="Active">
                     <a href="/scholarships" type="button" class="btn btn-sm @if (empty($data['visible'])) btn-success @else btn-outline-secondary @endif">All</a>
                     <a href="?visible=yes" type="button" class="d-none btn btn-sm @if (!empty($data['visible']) && $data['visible'] === 'yes') btn-success @else btn-outline-secondary @endif">Visible</a>
                     <a href="?visible=no" type="button" class="d-none btn btn-sm @if (!empty($data['visible']) && $data['visible'] === 'no') btn-success @else btn-outline-secondary @endif">Not visible</a>
@@ -175,7 +175,12 @@
 
         $('.edit').on('click', function(){
             var requirements = $(this).data('requirements');
-            requirements = requirements.split(',');
+            var result = requirements.toString().includes(",");
+
+            if (result) {
+                requirements = requirements.split(',');
+            }
+
             $('#requirements').val(requirements).trigger("change");
         });
     });

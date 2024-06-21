@@ -179,17 +179,17 @@ class RequirementsController extends Controller
         $id = $request->input('id');
         $data = Requirement::find($id);
 
-        // Delete file also
-        if (!empty($data['sample'])) {
-            $filex   = 'public/requirements/'.$data['sample'];
-            if (Storage::exists($filex)) {
-                Storage::delete($filex);   
-            }
-        }
-
         try {
 
             $data->forceDelete();
+
+            // Delete file also
+            if (!empty($data['sample'])) {
+                $filex   = 'public/requirements/'.$data['sample'];
+                if (Storage::exists($filex)) {
+                    Storage::delete($filex);   
+                }
+            }
 
             return response()->json([
                 'success' => AppHelper::deleted(),
@@ -197,10 +197,10 @@ class RequirementsController extends Controller
 
         } catch(QueryException $e) {
             
-            $data->update([ 'deleted_at' => now() ]);
+            // $data->update([ 'deleted_at' => now() ]);
 
             return response()->json([
-                'success' => AppHelper::archived(),
+                'error' => AppHelper::notAllowed(),
             ]);
             
         }

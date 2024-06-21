@@ -104,10 +104,10 @@ class SchoolYearsController extends Controller
 
         } catch(QueryException $e) {
             
-            $data->update([ 'deleted_at' => now() ]);
+            // $data->update([ 'deleted_at' => now() ]);
 
             return response()->json([
-                'success' => AppHelper::archived(),
+                'error' => AppHelper::notAllowed(),
             ]);
             
         }

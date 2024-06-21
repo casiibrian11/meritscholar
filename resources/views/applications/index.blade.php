@@ -22,7 +22,7 @@
                             <a href="/scholarship/applications" 
                                 type="button" 
                                 class="btn btn-sm btn-outline-secondary @if (empty($data['sy_id'])) bg-secondary text-white @endif">
-                                ALL RECORDS
+                                CLEAR FILTERS
                             </a>
                             @foreach ($data['school_years'] as $sy)
                                 <a href="?sy_id={{ $sy['id'] }}" 

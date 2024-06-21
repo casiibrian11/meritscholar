@@ -29,16 +29,26 @@ class DashboardController extends Controller
     public function index()
     {
         $query = new StudentInformation;
-        $gender = $query->select('gender')
-                                ->selectRaw('COUNT(gender) AS count')
-                                ->groupBy('gender')
-                                ->get()
-                                ->toArray();
-        $sex = $query->select('sex')
-                                ->selectRaw('COUNT(sex) AS count')
-                                ->groupBy('sex')
-                                ->get()
-                                ->toArray();
+
+        $gender = $query->with('users')
+                        ->whereHas('users', function($query) {
+                            $query->where('user_type', 'student');
+                        })
+                        ->select('gender')
+                        ->selectRaw('COUNT(gender) AS count')
+                        ->groupBy('gender')
+                        ->get()
+                        ->toArray();
+
+        $sex = $query->with('users')
+                    ->whereHas('users', function($query) {
+                        $query->where('user_type', 'student');
+                    })
+                    ->select('sex')
+                    ->selectRaw('COUNT(sex) AS count')
+                    ->groupBy('sex')
+                    ->get()
+                    ->toArray();
 
         
         $genderLabels = [];

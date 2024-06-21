@@ -94,6 +94,7 @@ class ApplicationsController extends Controller
 
     public static function data($data, $request, $source = "")
     {
+        $filters = $data;
         $data['status'] = $data['status'] ?? '';
         $data['sy_id'] = $data['sy_id'] ?? '';
         $data['scholarship_id'] = $data['scholarship_id'] ?? '';
@@ -119,7 +120,7 @@ class ApplicationsController extends Controller
                                             });
 
         $customQuery['for_approval'] = $query->where('completed', true)
-                                                ->where('under_review', '<>', null)
+                                                ->where('under_review', 0)
                                                 ->where('approved', null)
                                                 ->when(!empty($scholarshipId), function($query) use ($scholarshipId) {
                                                     $query->whereHas('scholarship_offers', function($query) use ($scholarshipId) {
@@ -183,6 +184,9 @@ class ApplicationsController extends Controller
                                     ->with('school_years')
                                     ->with('scholarship_offers')
                                     ->where('completed', true)
+                                    ->when(empty($filters), function($q) {
+                                        $q->whereNull('approved');
+                                    })
                                     ->when(!empty($scholarshipId), function($query) use ($scholarshipId) {
                                         $query->whereHas('scholarship_offers', function($query) use ($scholarshipId) {
                                             $query->with('scholarships')->whereHas('scholarships', function($query) use ($scholarshipId) {
@@ -195,7 +199,7 @@ class ApplicationsController extends Controller
                                     })
                                     ->when(empty($status) && empty($syId) && empty($scholarshipId), function($query) {
                                         $query->orWhere('request_to_change', true)
-                                        ->orWhere('request_to_change', '<>', null);
+                                            ->orWhere('request_to_change', '<>', 0);
                                     })
                                     ->when($status == 'to_review', function($query) {
                                         $query->where('under_review', null)->where('approved', null);

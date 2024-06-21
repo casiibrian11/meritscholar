@@ -527,12 +527,13 @@ table thead tr th{
 
                         <a class="nav-link" href="/manage-scholarships">
                             <div class="sb-nav-link-icon"><i class="fas fa-list-alt"></i></div>
-                            Manage Scholarships
+                            Manage&nbsp;Scholarships
                         </a>
+                        <br />
 
                         <a class="nav-link" href="/scholarship/applications">
                             <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
-                            Applications
+                            Manage&nbsp;Applications
                         </a>
                 </div>
             </nav>
