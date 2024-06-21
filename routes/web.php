@@ -83,6 +83,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/delete', [Controllers\CoursesController::class, 'delete'])->name('courses-delete');
                 Route::get('/{course}/visibility', [Controllers\CoursesController::class, 'visibility']);
                 Route::get('/{id}/restore', [Controllers\CoursesController::class, 'restore']);
+
+                Route::post('/load', [Controllers\CoursesController::class, 'load'])->name('courses-load');
             });
 
             Route::group(['middleware' => ['director'], 'prefix' => 'sy'], function () {
@@ -129,12 +131,11 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/requirements/update', [Controllers\ApplicationsController::class, 'update'])->name('update-status');
                 Route::post('/requirements/save-note', [Controllers\ApplicationsController::class, 'saveNote'])->name('save-note');
                 Route::get('/{note}/delete-note', [Controllers\ApplicationsController::class, 'deleteNote']);
-
                 Route::get('/{requirement}/request-to-change/{application}', [Controllers\ApplicationsController::class, 'requestToChange']);
-
                 Route::get('/{application}/update-status', [Controllers\ApplicationsController::class, 'updateStatus']);
-
                 Route::get('/{requirement}/requirements/download', [Controllers\ApplicationsController::class, 'download']);
+                
+                Route::get('/list', [Controllers\ApplicationsController::class, 'masterlist']);
             });
 
             Route::group(['middleware' => ['director'], 'prefix' => 'pdf'], function () {

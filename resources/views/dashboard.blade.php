@@ -16,7 +16,7 @@
     <div class="col-sm-12 p-0">
 
         <div class="alert bg-light shadow filters">
-            <div class="btn-group" role="group" aria-label="Active">
+            <div class="btn-group flex-wrap" role="group" aria-label="Active">
                 @foreach ($data['school_years'] as $sy)
                     <a href="?sy_id={{ $sy['id'] }}" type="button" class="btn btn-sm border-dark @if (!empty($data['sy_id']) && $data['sy_id'] == $sy['id']) btn-success @else btn-light @endif">
                         {{ $sy['semester'] }} {{ $sy['semester'] <> 'Summer' ? 'Semester' : '' }} of S.Y. {{ $sy['start_year'] }}-{{ $sy['end_year'] }}

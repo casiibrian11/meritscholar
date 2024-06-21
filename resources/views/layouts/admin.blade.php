@@ -414,9 +414,10 @@ table thead tr th{
     width:1250px;
   }
 
-  .btn-group, .btn-group .btn{
+  .btn-group .btn, .btn-group a{
     width:100% !important;
     font-size:11px !important;
+    border-radius:0 !important;
   }
 }
 </style>
@@ -534,6 +535,10 @@ table thead tr th{
                         <a class="nav-link" href="/scholarship/applications">
                             <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
                             Manage&nbsp;Applications
+                        </a>
+                        <a class="nav-link" href="/scholarship/applications/list">
+                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                            Applications&nbsp;Masterlist
                         </a>
                 </div>
             </nav>

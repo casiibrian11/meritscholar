@@ -5,6 +5,9 @@
     .selected {
         border-bottom: 3px solid #555 !important;
     }
+    .badge{
+        color:#000 !important;
+    }
 </style>
 <h3 class="mt-2 p-0"><i class="fa fa-edit"></i> List of Applications</h3>
 <ol class="breadcrumb mb-2 text-sm">
@@ -19,7 +22,7 @@
                     <div class="col-sm-12">
                     <form action="" method="GET">
                         <div class="input-group mb-3">
-                            <input type="text" class="form-control" placeholder="Search (name or email)..." name="keyword" 
+                            <input type="text" class="form-control border-dark" placeholder="Search (name or email)..." name="keyword" 
                                 value="@if (!empty($data['keyword'])){{ $data['keyword'] }}@endif">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-secondary" type="submit"><i class="fa fa-search"></i> Search</button>
@@ -27,7 +30,7 @@
                         </div>
                     </form>
                     @if (count($data['school_years']) > 0)
-                        <div class="btn-group mb-2" role="group" aria-label="Active">
+                        <div class="btn-group mb-2 flex-wrap" role="group" aria-label="Active">
                             <a href="/scholarship/applications" 
                                 type="button" 
                                 class="btn btn-sm btn-outline-secondary @if (empty($data['sy_id'])) bg-secondary text-white @endif">
@@ -49,7 +52,7 @@
                     @endif
 
                     @if (count($data['scholarships']) > 0)
-                        <div class="btn-group mb-2" role="group" aria-label="Active">
+                        <div class="btn-group mb-2 flex-wrap" role="group" aria-label="Active">
                             @foreach ($data['scholarships'] as $scholarship)
                                 <a href="?sy_id={{ $data['sy_id'] ?? '' }}&scholarship_id={{ $scholarship['id']  }}" 
                                     type="button" 
@@ -92,7 +95,6 @@
                     @endforeach
                 </div>
                 @if (count($data['applications']) > 0)
-                    <div class="table-container">
                     <small>
                         <span class="badge alert alert-secondary px-5 w-100 p-2">
                             Showing {{ count($data['applications']) }} of {{ $data['applications']->total() }} entries
@@ -102,20 +104,20 @@
 
                     <div class="row">
                         <div class="col-sm-12">
-                            <a href="{{ $data['pdf'] }}" target="_blank" class="btn btn-secondary">
+                            <a href="{{ $data['pdf'] }}" target="_blank" class="btn btn-secondary btn-sm p-1 px-3">
                                 <i class="fa fa-download"></i> PDF
                             </a>
-                            <a href="{{ $data['excel'] }}" target="_blank" class="btn btn-secondary">
+                            <a href="{{ $data['excel'] }}" target="_blank" class="btn btn-secondary btn-sm p-1 px-3">
                                 <i class="fa fa-list-alt"></i> EXCEL
                             </a>
                         </div>
                     </div>
                     <br />
-
+                    <div class="table-container">
                     <small>
                         {{ $data['applications']->render() }}
                     </small>
-                    <table class="table table-bordered table-hover table-condensed table-striped">
+                    <table class="table table-bordered table-hover table-condensed table-striped" style="font-size:11px !important;">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -210,8 +212,12 @@
             </div>
         </div>
     </div>
+    <br />
+<br />
+<br />
+<br />
+<br />
 </div>
-
 
 <script>
     $(function(){

@@ -23,6 +23,7 @@ use App\Models\Application;
 use App\Models\Course;
 use App\Models\Note;
 use App\Models\User;
+use App\Models\College;
 use App\Models\SubmittedRequirement;
 
 
@@ -453,5 +454,18 @@ class ApplicationsController extends Controller
 
         $result = $brevo->executeEmailsBatchSend($mail);
         return $result;
+    }
+
+    public function masterlist(Request $request)
+    {
+        $data = $request->all();
+        $data = self::data($data, $request);
+
+        $data['pdf'] = '/pdf'.$request->getRequestUri();
+        $data['excel'] = '/excel'.$request->getRequestUri();
+
+        $data['colleges'] = College::orderBy('college_name', 'ASC')->get();
+
+        return view('applications.masterlist', compact('data'));
     }
 }

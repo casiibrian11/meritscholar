@@ -118,4 +118,20 @@ class CoursesController extends Controller
         $college = Course::withTrashed()->where('id', $id)->restore();
         return redirect('/courses')->with('success', AppHelper::restored());
     }
+
+    public function load(Request $request)
+    {
+        $data = $request->all();
+        $college_id = $data['college_id'] ?? '';
+         
+        $data['courses'] = Course::where('college_id', $college_id)
+                                ->orderBy('course_name', 'ASC')
+                                ->get();
+
+        $html = view('courses.load', compact('data'))->render();
+
+        return response()->json([
+            'html' => $html
+        ]);
+    }
 }

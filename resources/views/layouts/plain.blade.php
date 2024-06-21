@@ -25,12 +25,51 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.dataTables.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css">
 
     <script>
         var _token = $('meta[name=csrf-token').attr('content');
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        function TableComparer(index) {
+            return function(a, b) {
+                var val_a = TableCellValue(a, index);
+                var val_b = TableCellValue(b, index);
+                var result = ($.isNumeric(val_a) && $.isNumeric(val_b)) ? val_a - val_b : val_a.toString().localeCompare(val_b);
+
+                return result;
+            }
+        }
+
+        function TableCellValue(row, index) {
+            return $(row).children("td").eq(index).text();
+        }
+
+        $(function(){
+            $(document).on("click", "table thead tr th:not(.no-sort)", function() {
+                var table = $(this).parents("table");
+                var rows = $(this).parents("table").find("tbody tr").toArray().sort(TableComparer($(this).index()));
+                var dir = ($(this).hasClass("sort-asc")) ? "desc" : "asc";
+
+                if (dir == "desc") {
+                    rows = rows.reverse();
+                }
+
+                for (var i = 0; i < rows.length; i++) {
+                    table.append(rows[i]);
+                }
+
+                table.find("thead tr th").removeClass("sort-asc").removeClass("sort-desc");
+                $(this).removeClass("sort-asc").removeClass("sort-desc") .addClass("sort-" + dir);
+            });
+        });
     </script>
 </head>
 <style>
