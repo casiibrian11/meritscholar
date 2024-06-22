@@ -25,17 +25,15 @@
             </div>
         </div>
 
-        <div class="col-sm-12">
+        <div class="col-sm-12 px-3">
             <div class="row justify-content-center">
-                <div class="col-sm-5">
+                <div class="col-sm-4">
                     <center>
                         <h4>
                             <b>SEX AT BIRTH CHART</b>
                         </h4>
                     </center>
                     <canvas id="sexChart"></canvas>
-                </div>
-                <div class="col-sm-5">
                     <center>
                         <h4>
                             <b>GENDER IDENTIFICATION CHART</b>
@@ -43,19 +41,17 @@
                     </center>
                     <canvas id="genderChart"></canvas>
                 </div>
-            </div>
-        </div>
 
-        
-            <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-8">
                     <div class="col-sm-12 shadow p-3 rounded-5 mt-4 p-0" style="border:1px solid #006400;">
-                        <h4>
-                            <b><i class="fas fa-tachometer-alt"></i> APPLICATIONS</b>
-                        </h4>
-                        <canvas id="applicationsChart"></canvas>
+                        <canvas id="applicationsChart" style="width:80%;"></canvas>
+                        <hr class="border-top border-top-success">
+                        <canvas id="scholarshipsChart" style="width:80%;"></canvas>
                     </div>
                 </div>
+
+            </div>
+        </div>
             </div>
         </div>
     </div>
@@ -66,9 +62,10 @@
     var genderChart = document.getElementById('genderChart').getContext('2d');
     var sexChart = document.getElementById('sexChart').getContext('2d');
     var applicationsChart = document.getElementById('applicationsChart').getContext('2d');
+    var scholarshipsChart = document.getElementById('scholarshipsChart').getContext('2d');
 
     var genderChart = new Chart(genderChart, {
-        type: 'pie',
+        type: 'doughnut',
         data: {
             labels: @json($data['genderLabels']),
             datasets: [{
@@ -106,6 +103,36 @@
                         beginAtZero: true
                     }
                 }
+            }
+        },
+    });
+
+    var scholarshipsChart = new Chart(scholarshipsChart, {
+        type: 'bar',
+        data: {
+            labels: @json($data['scholarshipsLabels']),
+            datasets: [{
+                label: '',
+                data: @json($data['scholarshipsCounts']),
+                borderColor: '#FFF',
+                borderWidth: 1,
+                fill: true,
+                backgroundColor: '#006400'
+            }],
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                // scales: {
+                //     y: {
+                //         beginAtZero: true
+                //     },
+                //     yAxes: [{
+                //         ticks: {
+                //             maxRotation: 180,
+                //             minRotation: 180
+                //         }
+                //     }]
+                // }
             }
         },
     });

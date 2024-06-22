@@ -34,6 +34,7 @@ class DashboardController extends Controller
         $data['school_years'] = SchoolYear::orderBy('semester', 'ASC')->orderBy('start_year', 'ASC')->get();
 
         $query = new StudentInformation;
+        $appQuery = new Application;
 
         $gender = $query->with('users')
                         ->when(!empty($data['sy_id']), function($query) use ($data) {
@@ -69,7 +70,7 @@ class DashboardController extends Controller
                     ->get()
                     ->toArray();
 
-        $applications = Application::where('completed', true)
+        $applications = $appQuery->where('completed', true)
                             ->when(!empty($data['sy_id']), function($query) use ($data) {
                                 $query->where('sy_id', $data['sy_id']);
                             })
@@ -77,7 +78,29 @@ class DashboardController extends Controller
                             ->groupBy('date')
                             ->get()
                             ->toArray();
+        $scholarships = $appQuery->where('completed', true)
+                            ->when(!empty($data['sy_id']), function($query) use ($data) {
+                                $query->where('sy_id', $data['sy_id']);
+                            })
+                            ->selectRaw('COUNT(scholarship_offer_id) AS offer_count, scholarship_offer_id')
+                            ->groupBy('scholarship_offer_id')
+                            ->get()
+                            ->toArray();
 
+        $offerIds = [];
+        foreach ($scholarships as $key => $value) {
+            $offerIds[] = $scholarships[$key]['scholarship_offer_id'];
+        }
+        
+        $offers = ScholarshipOffer::whereIn('id', $offerIds)
+                                ->with('scholarships')
+                                ->get()
+                                ->toArray();
+
+        $scholarshipOffers = [];
+        foreach ($offers as $offer) {
+            $scholarshipOffers[$offer['id']] = $offer;
+        }      
         
         $genderLabels = [];
         $genderCounts = [];
@@ -85,6 +108,9 @@ class DashboardController extends Controller
         $sexCounts = [];
         $applicationLabels = [];
         $applicationCounts = [];
+        $scholarshipsLabels = [];
+        $scholarshipsCounts = [];
+
 
         foreach ($gender as $key => $value) {
             
@@ -114,6 +140,14 @@ class DashboardController extends Controller
             $applicationsCounts[] = $applicationCount;
         }
 
+        foreach ($scholarships as $key => $value) {
+            $scholarshipCount = $scholarships[$key]['offer_count'];
+            $offerId = $scholarships[$key]['scholarship_offer_id'];
+
+            $scholarshipsLabels[] = strtoupper($scholarshipOffers[$offerId]['scholarships']['description']);
+            $scholarshipsCounts[] = $scholarshipCount;
+        }
+
         $data['genderLabels'] = $genderLabels;
         $data['genderCounts'] = $genderCounts;
 
@@ -122,6 +156,9 @@ class DashboardController extends Controller
 
         $data['applicationsLabels'] = $applicationsLabels;
         $data['applicationsCounts'] = $applicationsCounts;
+
+        $data['scholarshipsLabels'] = $scholarshipsLabels;
+        $data['scholarshipsCounts'] = $scholarshipsCounts;
 
         return view('dashboard', compact('data'));
     }
