@@ -142,4 +142,9 @@ class AccountsController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function unauthorized(Request $request)
+    {
+        return view('unauthorized');
+    }
 }

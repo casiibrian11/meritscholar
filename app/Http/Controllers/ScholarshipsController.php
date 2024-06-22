@@ -19,6 +19,7 @@ use App\Models\ApplicationDetail;
 use App\Models\Application;
 use App\Models\Course;
 use App\Models\Note;
+use App\Models\User;
 use App\Models\SubmittedRequirement;
 use App\Http\Requests\ScholarshipsRequest;
 use App\Http\Requests\ApplicationDetailsRequest;
@@ -199,12 +200,23 @@ class ScholarshipsController extends Controller
 
         $data['detail'] = ApplicationDetail::where('sy_id', $data['sy_id'])
                                     ->where('user_id', $data['user_id'])
+                                    ->with('courses')
+                                    ->whereHas('courses', function($query){
+                                        return $query->with('colleges');
+                                    })
                                     ->first();
+        $data['college_name'] = "";
+        if (!empty($data['detail']['courses']['colleges']['college_name'])) {
+            $data['college_name'] = $data['detail']['courses']['colleges']['college_name'];
+        }
 
-        $query = Application::where('sy_id', $data['sy_id'])->where('user_id', $data['user_id']);
+        $query = new Application;
+        $query = $query->where('sy_id', $data['sy_id'])->where('user_id', $data['user_id']);
                                     
         $ids = $query->pluck('scholarship_offer_id')->toArray();
-        $data['applications'] = $query->with('scholarship_offers')->with('school_years')->get();
+        $data['applications'] = $query->with('scholarship_offers')
+                                    ->with('school_years')
+                                    ->get();
 
         $data['offers'] = ScholarshipOffer::with('scholarships')
                                 ->where('sy_id', $sy['id'])
@@ -212,7 +224,9 @@ class ScholarshipsController extends Controller
                                 ->whereNotIn('id', $ids)
                                 ->orderBy('id', 'ASC')
                                 ->get();
-        
+
+        $data['applied'] = $query->where('completed', true)->count();
+        $data['disable'] = ($data['applied'] > 0) ? 'readonly disabled="disabled"' : '';
 
         return view('frontend.scholarships.application', compact('data'));
     }
@@ -438,12 +452,14 @@ class ScholarshipsController extends Controller
             $application->update([
                 'completed' => true,
                 'request_to_change' => false,
+                'date_updated' => now(),
                 'under_review' => null
             ]);
         } else {
             $application->update([
                 'completed' => true,
-                'under_review' => null
+                'under_review' => null,
+                'date_completed' => now(),
             ]);
         }
 
@@ -466,7 +482,7 @@ class ScholarshipsController extends Controller
         try {
             if(isset($key['id'])) {
                 ApplicationDetail::where('id', $key['id'])->update($data);
-                $message = AppHelper::updated();
+                $message = "Your application details has been updated.";
             } else {
                 ApplicationDetail::create($data);
                 $message = AppHelper::saved();    
@@ -504,5 +520,48 @@ class ScholarshipsController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function withdraw(Request $request, SchoolYear $sy, Application $application)
+    {
+        $user = Auth::user();
+        $user = User::where('id', $user['id'])->first();
+
+        if (!is_null($application['approved']) 
+            || !is_null($application['under_review']) 
+            || $application['user_id'] <> $user['id']) {
+            
+            $user->update([
+                'is_active' => false,
+                'disabled_note' => 'tried to manually delete an application last '.now()->format('F j, Y h:i:s a'),
+                'disabled_by' => 'system'
+            ]);
+
+            return redirect('/unauthorized');
+        }
+
+        $submitted = SubmittedRequirement::where('application_id', $application['id'])->get();
+
+        $additionalMessage = "";
+
+        if (count($submitted) > 0) {
+            foreach ($submitted as $submitted) {
+                if (!empty($submitted['attachment'])) {
+                    // Delete file also
+                    
+                    $filex   = 'public/submitted-requirements/'.$submitted['sample'];
+
+                    if (Storage::exists($filex)) {
+                        Storage::delete($filex);   
+                    }
+                }
+
+                $submitted->delete();
+            }
+        }
+
+        $application->forceDelete();
+
+        return redirect()->back()->with('success', 'Your application has been withdrawn.');
     }
 }

@@ -54,6 +54,7 @@
                                 <th>User Type</th>
                                 <th><center>Status</center></th>
                                 <th><center>Active</center></th>
+                                <th><center>Disabled by</center></th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -102,6 +103,25 @@
                                             @endif
                                         </a>
                                         </center>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (!empty($user['disabled_by']))
+                                            <span class="badge bg-danger">
+                                                @if ($user['disabled_by'] == 'system')
+                                                    {{ $user['disabled_by'] }}
+                                                @else
+                                                    admin
+                                                @endif
+                                            </span>
+                                        @endif
+
+                                        @if (!empty($user['disabled_note']))
+                                            <a href="#" class="reason" data-reason="{{ $user['disabled_note'] }}" data-by="{{ $user['disabled_by'] }}">
+                                                <span class="badge bg-light border border-dark text-dark">
+                                                    <i class="fa fa-edit"></i> reason
+                                                </span>
+                                            </a>
+                                        @endif
                                     </td>
                                     <td class="p-0">
                                     <center>
@@ -168,7 +188,31 @@
                 confirmButtonText: "Yes"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = href;
+                    if (active) {
+                        var reason = "";
+                        Swal.fire({
+                            title: "Add a reason why you are disabling this account.",
+                            input: "text",
+                            inputAttributes: {
+                                autocapitalize: "off"
+                            },
+                            showCancelButton: true,
+                            confirmButtonText: "Add note",
+                            cancelButtonText: "Disable without a note",
+                            showLoaderOnConfirm: true,
+                            allowOutsideClick: false,
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    reason = result.value;
+                                    window.location.href = href+'?reason='+reason;
+                                } else {
+                                    reason = "";
+                                    window.location.href = href+'?reason='+reason;
+                                }
+                            });
+                    } else {
+                        window.location.href = href;
+                    }
                 }
             });
         });
@@ -197,6 +241,17 @@
                 title: "Oops!",
                 text: "You are not allowed update your own status.",
                 icon: "error"
+            });
+        });
+
+        $('.reason').on('click', function(e){
+            e.preventDefault();
+            var reason = $(this).data('reason');
+            var by = $(this).data('by');
+            Swal.fire({
+                title: "Disabled by "+by,
+                text: reason,
+                icon: null
             });
         });
 

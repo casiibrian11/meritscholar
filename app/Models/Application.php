@@ -16,6 +16,8 @@ class Application extends Model
         'approved',
         'under_review',
         'request_to_change',
+        'date_completed',
+        'date_updated',
         'user_id'
     ];
 

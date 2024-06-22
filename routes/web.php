@@ -19,6 +19,7 @@ Route::get('/', function () {
 });
 
 
+Route::get('/unauthorized', [Controllers\AccountsController::class, 'unauthorized']);
 Route::post('/verify-email', [Controllers\AccountsController::class, 'verifyEmail'])->name('verify-email');
 
 Auth::routes();
@@ -54,6 +55,8 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/scholarships/application/complete', [Controllers\ScholarshipsController::class, 'completeApplication'])->name('complete-application');
             
             Route::match(['get', 'post'], '/personal-information/save', [Controllers\AccountsController::class, 'save'])->name('personal-information-save');
+
+            Route::get('/scholarships/{sy}/application/{application}/withdraw', [Controllers\ScholarshipsController::class, 'withdraw']);
         });
 
         // Admin | Director routes

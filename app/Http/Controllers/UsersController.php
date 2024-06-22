@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -53,16 +54,31 @@ class UsersController extends Controller
         }
     }
 
-    public function update(User $user)
+    public function update(User $user, Request $request)
     {
+        $data = $request->all();
+        $reason = $data['reason'] ?? '';
+
         if ($user->is_active) {
             $isActive = false;
             $status = 'deactivated';
+
+            $note = "Disabled by:" .Auth::user()->first_name.' '.Auth::user()->last_name.' ('.Auth::user()->email.') last '.now()->format('M j, Y h:i:s a');
+            $data['disabled_note'] = $note." Reason: ".$reason;
+            $data['disabled_by'] = 'admin';
+
         } else {
             $isActive = true;
             $status = 'activated';
+            $data['disabled_note'] = "";
+            $data['disabled_by'] = "";
         }
-        $user->update(['is_active' => $isActive]);
+
+        $user->update([
+            'is_active' => $isActive,
+            'disabled_note' => $data['disabled_note'],
+            'disabled_by' => $data['disabled_by']
+        ]);
 
         return redirect('/users')->with('success', "User's account has been {$status}.");
     }

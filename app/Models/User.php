@@ -27,6 +27,8 @@ class User extends Authenticatable
         'email',
         'password',
         'is_disabled',
+        'disabled_note',
+        'disabled_by',
         'is_active',
         'is_verified',
         'verification_code'
