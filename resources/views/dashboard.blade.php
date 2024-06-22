@@ -28,17 +28,7 @@
         <div class="col-sm-12 px-3">
             <div class="row justify-content-center">
                 <div class="col-sm-4">
-                    <center>
-                        <h4>
-                            <b>SEX AT BIRTH CHART</b>
-                        </h4>
-                    </center>
                     <canvas id="sexChart"></canvas>
-                    <center>
-                        <h4>
-                            <b>GENDER IDENTIFICATION CHART</b>
-                        </h4>
-                    </center>
                     <canvas id="genderChart"></canvas>
                 </div>
 
