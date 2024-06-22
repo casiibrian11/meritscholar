@@ -106,8 +106,8 @@ class DashboardController extends Controller
         $genderCounts = [];
         $sexLabels = [];
         $sexCounts = [];
-        $applicationLabels = [];
-        $applicationCounts = [];
+        $applicationsLabels = [];
+        $applicationsCounts = [];
         $scholarshipsLabels = [];
         $scholarshipsCounts = [];
 
