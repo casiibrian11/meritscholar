@@ -21,6 +21,8 @@ use App\Models\Course;
 use App\Models\Note;
 use App\Models\User;
 use App\Models\SubmittedRequirement;
+use App\Models\Setting;
+
 use App\Http\Requests\ScholarshipsRequest;
 use App\Http\Requests\ApplicationDetailsRequest;
 
@@ -291,6 +293,18 @@ class ScholarshipsController extends Controller
             $data['ok'] = true;
         }
 
+        $data['officeHoursOnly'] = AppHelper::officeHoursOnly();
+        $data['pastOfficeHours'] = AppHelper::pastOfficeHours();
+        $data['weekendsAllowed'] = AppHelper::weekendsAllowed();
+        $data['settings'] = Setting::all();
+
+        $settings = [];
+        foreach ($data['settings'] as $setting) {
+            $settings[$setting['name']] = $setting['value'];
+        }
+
+        $data['settings'] = $settings;
+        
         return view('frontend.scholarships.requirements', compact('data'));
     }
 

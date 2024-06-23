@@ -172,16 +172,46 @@
             
             @if (!$data['application']['completed'])
                 @if ($data['ok'])
-                    <form action="{{ route('complete-application') }}" method="POST" id="submit-form">
-                        @csrf
-                        <input type="hidden" name="id" value="{{ $data['application']['id'] }}" readonly required>
-                        <input type="hidden" name="sy_id" value="{{ $data['sy_id'] }}" readonly required>
-                        <p style="text-align:right;">
-                            <button type="button" class="btn btn-success px-5 p-3" id="submit-btn">
-                                <i class="fa fa-check"></i> Complete Application
-                            </button>
-                        </p>
-                    </form>
+                    @if ($data['officeHoursOnly'])
+                        @if ($data['pastOfficeHours'])
+                            <div class="alert alert-danger">
+                                <center>
+                                    <strong>NOTE:</strong> You are only allowed to complete applications during office hours
+                                    @if (!empty($data['settings']['office_hours_start']) 
+                                        && !empty($data['settings']['office_hours_end'])
+                                        && !empty($data['settings']['office_hours_start']) !== false
+                                        && !empty($data['settings']['office_hours_end']) !== false)
+                                        from <b>{{ now()->parse($data['settings']['office_hours_start'])->format('h:i a') }}</b>
+                                        to <b>{{ now()->parse($data['settings']['office_hours_end'])->format('h:i a') }}</b>
+                                    @endif
+                                    @if (!$data['weekendsAllowed'])
+                                        during weekdays only.
+                                    @else
+                                        including weekends.
+                                    @endif
+                                </center>
+                            </div>
+                        @else
+                            @if (now()->isWeekend() && !$data['weekendsAllowed'])
+                                <div class="alert alert-danger">
+                                    <center>
+                                        <strong>NOTE:</strong> You are only allowed to complete applications during weekdays.
+                                    </center>
+                                </div>
+                            @else
+                                <form action="{{ route('complete-application') }}" method="POST" id="submit-form">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $data['application']['id'] }}" readonly required>
+                                    <input type="hidden" name="sy_id" value="{{ $data['sy_id'] }}" readonly required>
+                                    <p style="text-align:right;">
+                                        <button type="button" class="btn btn-success px-5 p-3" id="submit-btn">
+                                            <i class="fa fa-check"></i> Complete Application
+                                        </button>
+                                    </p>
+                                </form>
+                            @endif
+                        @endif
+                    @endif
                 @else
                     <div class="alert alert-info">
                         <center>
@@ -225,7 +255,7 @@
         </div>
 
 
-        @if (!$data['application']['completed'])
+        @if (!$data['application']['completed'] && is_null($data['application']['under_review']) && is_null($data['application']['approved  ']))
         <div class="col-sm-12 p-4 border rounded-3" style="background:#006400 !important;color:#FFF !important;">
             @if (!empty($data['application']['scholarship_offers']['scholarships']['requirements']))
                 @php

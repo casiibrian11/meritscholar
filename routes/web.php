@@ -31,6 +31,33 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     Route::middleware(['verified'])->group(function () {
         Route::get('/home', [Controllers\HomeController::class, 'index'])->name('home');
+        
+        Route::middleware(['student'])->group(function () {
+            
+            Route::get('/profile', [Controllers\AccountsController::class, 'index']);
+            Route::get('/account', [Controllers\AccountsController::class, 'account']);
+            Route::post('/account/update', [Controllers\AccountsController::class, 'update'])->name('account-update');
+            Route::get('/personal-information', [Controllers\AccountsController::class, 'info']);
+            Route::get('/address', [Controllers\AccountsController::class, 'address']);
+            Route::get('/additional-information', [Controllers\AccountsController::class, 'additionalInformation']);
+            Route::get('/scholarships/list', [Controllers\ScholarshipsController::class, 'selectSchoolYear']);
+            Route::get('/scholarships/view/{sy}/list', [Controllers\ScholarshipsController::class, 'scholarships']);
+            Route::get('/scholarships/{sy}/application', [Controllers\ScholarshipsController::class, 'application']);
+            Route::get('/scholarships/{sy}/application/{application}/requirements', [Controllers\ScholarshipsController::class, 'requirements']);
+            Route::post('/scholarships/requirements/store', [Controllers\ScholarshipsController::class, 'storeRequirements'])->name('requirements-submit');
+
+            Route::post('/scholarships/application/save', [Controllers\ScholarshipsController::class, 'applicationSave'])->name('application-save');
+            Route::post('/scholarships/application/store', [Controllers\ScholarshipsController::class, 'store'])->name('application-store');
+
+            Route::post('/scholarships/store', [Controllers\ScholarshipsController::class, 'store'])->name('scholarship-store');
+            
+            Route::get('/attachment/{requirement}/remove', [Controllers\ScholarshipsController::class, 'removeAttachment']);
+            Route::post('/scholarships/application/complete', [Controllers\ScholarshipsController::class, 'completeApplication'])->name('complete-application');
+            
+            Route::match(['get', 'post'], '/personal-information/save', [Controllers\AccountsController::class, 'save'])->name('personal-information-save');
+
+            Route::get('/scholarships/{sy}/application/{application}/withdraw', [Controllers\ScholarshipsController::class, 'withdraw']);
+        });
 
         // Admin | Support | Director routes
         Route::middleware(['admin'])->group(function () {
@@ -122,6 +149,11 @@ Route::middleware(['auth', 'active'])->group(function () {
 
             Route::group(['middleware' => ['support'], 'prefix' => 'excel'], function () {
                 Route::get('/scholarship/applications', [Controllers\ApplicationsController::class, 'toExcel']);
+            });
+
+            Route::group(['middleware' => ['adminOnly'], 'prefix' => 'settings'], function () {
+                Route::get('/', [Controllers\SettingsController::class, 'index']);
+                Route::post('/save', [Controllers\SettingsController::class, 'save'])->name('save-settings');
             });
         });
     });

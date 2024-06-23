@@ -185,16 +185,16 @@ label{
                                 <a class="nav-link"  href="/">Home</a>
                             </li>
                         @else
-                            @if (Auth::user()->user_type == 'admin' || Auth::user()->user_type == 'director')
-                                <li class="nav-item">
-                                    <a class="nav-link"  href="/dashboard">Dashboard</a>
-                                </li>
-                            @else
+                            @if (Auth::user()->user_type == 'student')
                                 <li class="nav-item">
                                     <a class="nav-link"  href="/">Home</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link"  href="/scholarships/list">List of scholarships</a>
+                                </li>
+                            @else
+                                <li class="nav-item">
+                                    <a class="nav-link"  href="/dashboard">Dashboard</a>
                                 </li>
                             @endif
                         @endif

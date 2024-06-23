@@ -484,6 +484,10 @@ table thead tr th{
                                 <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                                 Users
                             </a>
+                            <a class="nav-link" href="/settings">
+                                <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
+                                System Settings
+                            </a>
 
                             <!--- SETTINGS NAV -->
                             
