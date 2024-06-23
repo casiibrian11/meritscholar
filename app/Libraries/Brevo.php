@@ -6,10 +6,12 @@ use Exception;
 use GuzzleHttp\Client;
 use Brevo\Client\Configuration;
 use Brevo\Client\Api\TransactionalEmailsApi;
+use Brevo\Client\Api\TransactionalSMSApi;
 use Brevo\Client\Model\SendSmtpEmail;
 use Brevo\Client\Api\ContactsApi;
 use Brevo\Client\Model\CreateContact;
 use Brevo\Client\Model\RemoveContactFromList;
+use Brevo\Client\Model\SendTransacSms;
 
 class Brevo
 {
@@ -104,5 +106,66 @@ class Brevo
         $data['senderName'] = (!empty($store)) ? config('mail')['stores'][$store]['from']['name'] : config('mail')['from']['name'];
 
         return $data;
+    }
+
+    public function getEmailReportPerEmail($email, $startDate = "", $endDate = "")
+    {
+        $client = new Client();
+
+        $response = $client->request('GET', 'https://api.brevo.com/v3/smtp/emails?email='.$email, [
+            'headers' => [
+                'accept' => 'application/json',
+                'api-key' => config('brevo.api_key')
+            ],
+        ]);
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
+    public function getEmailReport($startDate = "")
+    {
+        $apiInstance = new TransactionalEmailsApi(
+            new Client(),
+            $this->config
+        );
+
+        $limit = 100;
+        $offset = 0;
+
+        if (empty($startDate)) {
+            $startDate = now()->startOfMonth()->format('Y-m-d'); 
+        }
+
+        $endDate = now()->format('Y-m-d');
+
+        $result = [];
+        try {
+            $result = $apiInstance->getEmailEventReport($limit, $offset, $startDate, $endDate);
+            return json_decode($result, true);
+        } catch (Exception $e) {
+            $result['error'] = 'Exception when calling TransactionalEmailsApi->getEmailEventReport: '.$e->getMessage();
+            return $result;
+        }
+    }
+
+    public function sendSms($recipient, $content)
+    {
+        $apiInstance = new TransactionalSMSApi(
+            new Client(),
+            $this->config
+        );
+        
+        $sendTransacSms = new SendTransacSms();
+        $sendTransacSms['sender'] = 'OSSA';
+        $sendTransacSms['recipient'] = $recipient;
+        $sendTransacSms['content'] = $content;
+
+        try {
+            $result = $apiInstance->sendTransacSms($sendTransacSms);
+            return $result;
+        } catch (Exception $e) {
+            $result['error'] = 'Exception when calling TransactionalSMSApi->sendTransacSms: '. $e->getMessage();
+            return $result;
+        }
     }
 }

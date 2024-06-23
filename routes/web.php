@@ -62,6 +62,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         // Admin | Director routes
         Route::middleware(['admin'])->group(function () {
             Route::get('/dashboard', [Controllers\DashboardController::class, 'index']);
+            Route::get('/list', [Controllers\ApplicationsController::class, 'masterlist']);
+            Route::get('/emails', [Controllers\EmailsController::class, 'emailReport']);
+            Route::get('/send-sms', [Controllers\EmailsController::class, 'sendSms']);
             
             // Admin only Routes            
             Route::group(['middleware' => ['director'], 'prefix' => 'users'], function () {
@@ -137,8 +140,6 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/{requirement}/request-to-change/{application}', [Controllers\ApplicationsController::class, 'requestToChange']);
                 Route::get('/{application}/update-status', [Controllers\ApplicationsController::class, 'updateStatus']);
                 Route::get('/{requirement}/requirements/download', [Controllers\ApplicationsController::class, 'download']);
-                
-                Route::get('/list', [Controllers\ApplicationsController::class, 'masterlist']);
             });
 
             Route::group(['middleware' => ['director'], 'prefix' => 'pdf'], function () {
