@@ -475,70 +475,94 @@ table thead tr th{
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link" href="/dashboard">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Dashboard
-                        </a>
-                        <a class="nav-link" href="/users">
-                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
-                            Users
-                        </a>
+                        @if (Auth::user()->user_type == 'admin')
+                            <a class="nav-link" href="/dashboard">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <a class="nav-link" href="/users">
+                                <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                                Users
+                            </a>
 
-                        <!--- SETTINGS NAV -->
-                        
-                        <a class="nav-link collapsed" id="setup" href="#" data-bs-toggle="collapse"
-                            data-bs-target="#settings" aria-expanded="false" aria-controls="collapseLayouts">
-                            <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
-                            System Setup
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                        </a>
-                        <div class="collapse" id="settings" aria-labelledby="headingOne"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/colleges"><i class="fas fa-building"></i>&nbsp;Colleges</a>
-                            </nav>
-                        </div>
-                        <div class="collapse" id="settings" aria-labelledby="headingOne"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/courses"><i class="fas fa-list"></i>&nbsp;Courses</a>
-                            </nav>
-                        </div>
-                        <div class="collapse" id="settings" aria-labelledby="headingOne"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/sy"><i class="fas fa-calendar"></i>&nbsp;School Years</a>
-                            </nav>
-                        </div>
-                        <div class="collapse" id="settings" aria-labelledby="headingOne"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/requirements"><i class="fas fa-list-alt"></i>&nbsp;Requirements</a>
-                            </nav>
-                        </div>
-                        <div class="collapse" id="settings" aria-labelledby="headingOne"
-                            data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="/scholarships"><i class="fas fa-book-open"></i>&nbsp;Scholarships</a>
-                            </nav>
-                        </div>
+                            <!--- SETTINGS NAV -->
+                            
+                            <a class="nav-link collapsed" id="setup" href="#" data-bs-toggle="collapse"
+                                data-bs-target="#settings" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-cog"></i></div>
+                                System Setup
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="settings" aria-labelledby="headingOne"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/colleges"><i class="fas fa-building"></i>&nbsp;Colleges</a>
+                                </nav>
+                            </div>
+                            <div class="collapse" id="settings" aria-labelledby="headingOne"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/courses"><i class="fas fa-list"></i>&nbsp;Courses</a>
+                                </nav>
+                            </div>
+                            <div class="collapse" id="settings" aria-labelledby="headingOne"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/sy"><i class="fas fa-calendar"></i>&nbsp;School Years</a>
+                                </nav>
+                            </div>
+                            <div class="collapse" id="settings" aria-labelledby="headingOne"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/requirements"><i class="fas fa-list-alt"></i>&nbsp;Requirements</a>
+                                </nav>
+                            </div>
+                            <div class="collapse" id="settings" aria-labelledby="headingOne"
+                                data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/scholarships"><i class="fas fa-book-open"></i>&nbsp;Scholarships</a>
+                                </nav>
+                            </div>
 
-                        <!--- SETTINGS NAV -->
+                            <!--- SETTINGS NAV -->
 
-                        <a class="nav-link" href="/manage-scholarships">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list-alt"></i></div>
-                            Manage&nbsp;Scholarships
-                        </a>
-                        <br />
+                            <a class="nav-link" href="/manage-scholarships">
+                                <div class="sb-nav-link-icon"><i class="fas fa-list-alt"></i></div>
+                                Manage&nbsp;Scholarships
+                            </a>
+                            <br />
 
-                        <a class="nav-link" href="/scholarship/applications">
-                            <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
-                            Manage&nbsp;Applications
-                        </a>
-                        <a class="nav-link" href="/scholarship/applications/list">
-                            <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
-                            Applications&nbsp;Masterlist
-                        </a>
+                            <a class="nav-link" href="/scholarship/applications">
+                                <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
+                                Manage&nbsp;Applications
+                            </a>
+                            <a class="nav-link" href="/scholarship/applications/list">
+                                <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                                Applications&nbsp;Masterlist
+                            </a>
+                        @elseif (Auth::user()->user_type == 'support')
+                            <a class="nav-link" href="/dashboard">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <a class="nav-link" href="/scholarship/applications">
+                                <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
+                                Manage&nbsp;Applications
+                            </a>
+                            <a class="nav-link" href="/scholarship/applications/list">
+                                <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                                Applications&nbsp;Masterlist
+                            </a>
+                        @elseif (Auth::user()->user_type == 'director')
+                            <a class="nav-link" href="/dashboard">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Dashboard
+                            </a>
+                            <a class="nav-link" href="/scholarship/applications/list">
+                                <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
+                                Applications&nbsp;Masterlist
+                            </a>
+                        @endif
                 </div>
             </nav>
         </div>

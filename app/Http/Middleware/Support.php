@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class Admin
+class Support
 {
     /**
      * Handle an incoming request.
@@ -18,10 +18,10 @@ class Admin
     {
         $userType = auth()->user()->user_type;
 
-        if ($userType == 'admin' || $userType == 'director'  || $userType == 'support') {
+        if ($userType == 'support' || $userType == 'admin') {
             return $next($request);
         }
-        
-        abort(401);
+
+        return abort(401);
     }
 }

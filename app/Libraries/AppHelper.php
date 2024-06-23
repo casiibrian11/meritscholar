@@ -2,6 +2,9 @@
 
 namespace App\Libraries;
 
+use App\Models\User;
+use App\Models\Setting;
+
 class AppHelper
 {
     public static function saved()

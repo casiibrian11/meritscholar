@@ -65,7 +65,8 @@ class Kernel extends HttpKernel
         'verified' => \App\Http\Middleware\Verified::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'active' => \App\Http\Middleware\Active::class,
-        'director' => \App\Http\Middleware\Director::class,
+        'adminOnly' => \App\Http\Middleware\AdminOnly::class,
         'student' => \App\Http\Middleware\Student::class,
+        'support' => \App\Http\Middleware\Support::class,
     ];
 }
