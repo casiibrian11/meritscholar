@@ -102,7 +102,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             });
 
             Route::group(['middleware' => ['director'], 'prefix' => 'scholarships'], function () {
-                Route::get('/', [Controllers\ScholarshipsController::class, 'index'])->name('scholarships');
+                Route::get('/', [Controllers\ScholarshipsController::class, 'index']);
                 Route::post('/save', [Controllers\ScholarshipsController::class, 'save'])->name('scholarships-save');
                 Route::post('/delete', [Controllers\ScholarshipsController::class, 'delete'])->name('scholarships-delete');
                 Route::get('/{scholarship}/visibility', [Controllers\ScholarshipsController::class, 'visibility']);
