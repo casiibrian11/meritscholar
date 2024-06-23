@@ -122,9 +122,12 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Course,&nbsp;Year&nbsp;&amp;&nbsp;Section</th>
+                                <th>College</th>
                                 <th>Scholarship</th>
                                 <th>S.Y.</th>
                                 <th><center>Status</center></th>
+                                <th class="text-center">Created</th>
+                                <th class="text-center">Updated</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -146,6 +149,9 @@
                                         @endif
 
                                         {{ $course['course_code'] ?? "" }} {{ $course['year_level'] ?? '' }} - {{ $course['section'] ?? '' }}
+                                    </td>
+                                    <td>
+                                        {{ $application['details']['courses']['colleges']['college_code'] ?? '' }}
                                     </td>
                                     <td class="capitalize">{{ $offer['scholarships']['description'] }}</td>
                                     <td>
@@ -188,6 +194,20 @@
                                             @else
                                                 <span class="badge bg-danger">denied</span>
                                             @endif
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if (!empty($application['date_completed']) && strtotime($application['date_completed']) !== false)
+                                            <span class="badge bg-light border border-dark text-dark">
+                                                {{ now()->parse($application['date_completed'])->format('M j, Y') }}
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if (!empty($application['date_updated']) && strtotime($application['date_updated']) !== false)
+                                            <span class="badge bg-light border border-dark text-dark">
+                                                {{ now()->parse($application['date_updated'])->format('M j, Y') }}
+                                            </span>
                                         @endif
                                     </td>
                                     <td>

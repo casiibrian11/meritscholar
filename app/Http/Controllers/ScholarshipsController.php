@@ -24,6 +24,9 @@ use App\Models\SubmittedRequirement;
 use App\Http\Requests\ScholarshipsRequest;
 use App\Http\Requests\ApplicationDetailsRequest;
 
+use App\Libraries\Brevo;
+use App\Libraries\Notifications;
+
 class ScholarshipsController extends Controller
 {
     public function index(Request $request)
@@ -151,6 +154,13 @@ class ScholarshipsController extends Controller
 
     public function selectSchoolYear(Request $request)
     {
+        $userId = Auth::user()->id;
+        $info = \App\Models\StudentInformation::where('user_id', $userId)->first();
+
+        if (empty($info) || !$info['completed'] || empty($info['student_id'])) {
+            return redirect('/personal-information')->with('error', "Some required information is still missing. You need to complete your information first.");
+        }
+
         $data = SchoolYear::where('active', true)->where('visible', true)->get();
 
         return view('frontend.school-years.index', compact('data'));
@@ -420,6 +430,7 @@ class ScholarshipsController extends Controller
         $application = Application::where('id', $id)
                                     ->where('user_id', $userId)
                                     ->with('scholarship_offers')
+                                    ->with('school_years')
                                     ->first();
 
         $requirements = $application['scholarship_offers']['scholarships']['requirements'];
@@ -463,7 +474,14 @@ class ScholarshipsController extends Controller
             ]);
         }
 
-        
+        $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+        $sy = $application['school_years'];
+        $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
+        $messageContent = "";
+        $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
+        $messageContent .= "We have received your application for <b>{$scholarship}</b> {$semester}. You will receive a separate email notification regarding the status of your application.";
+        Notifications::notify($application['user_id'], "We received your application for {$scholarship}", $messageContent);
+
         return redirect()->back()->with('success', "You're application has been submitted. Wait for notifications to your email regarding your application.");
     }
 

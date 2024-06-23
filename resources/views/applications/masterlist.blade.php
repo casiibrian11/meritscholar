@@ -8,6 +8,9 @@
     .badge{
         color:#000 !important;
     }
+    input, select{
+        border:1px solid #000 !important;
+    }
 </style>
 <h3 class="mt-2 p-0"><i class="fa fa-list"></i> Masterlist of applications</h3>
 <ol class="breadcrumb mb-2 text-sm">
@@ -23,11 +26,11 @@
                         <a href="/scholarship/applications/list" 
                             type="button" 
                             class="btn btn-sm btn-outline-secondary @if (empty($data['sy_id'])) bg-secondary text-white @endif">
-                            CLEAR FILTERS
+                            CLEAR SEARCH FILTERS
                         </a>
                         <br />
                         <br />
-                        <form action="" method="GET" class="mb-3">
+                        <form action="" method="GET" class="mb-3 alert alert-success shadow">
                         <div class="row px-3">
                             @if (count($data['school_years']) > 0)
                                 <div class="col-sm-4 px-0">
@@ -116,10 +119,10 @@
                     <br />
                     <div class="row">
                         <div class="col-sm-12">
-                            <a href="{{ $data['pdf'] }}" target="_blank" class="btn btn-secondary btn-sm p-1 px-3">
+                            <a href="{{ str_replace('/list', '', $data['pdf']) }}" target="_blank" class="btn btn-secondary btn-sm p-1 px-3">
                                 <i class="fa fa-download"></i> PDF
                             </a>
-                            <a href="{{ $data['excel'] }}" target="_blank" class="btn btn-secondary btn-sm p-1 px-3">
+                            <a href="{{ str_replace('/list', '', $data['excel']) }}" target="_blank" class="btn btn-secondary btn-sm p-1 px-3">
                                 <i class="fa fa-list-alt"></i> EXCEL
                             </a>
                         </div>
@@ -135,6 +138,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Course,&nbsp;Year&nbsp;&amp;&nbsp;Section</th>
+                                <th>College</th>
                                 <th>Scholarship</th>
                                 <th>S.Y.</th>
                                 <th><center>Status</center></th>
@@ -158,6 +162,10 @@
                                         @endif
 
                                         {{ $course['course_code'] ?? "" }} {{ $course['year_level'] ?? '' }} - {{ $course['section'] ?? '' }}
+                                    </td>
+                                    <td style="text-transform:capitalize !important;">
+                                        ({{ $application['details']['courses']['colleges']['college_code'] ?? '' }})
+                                        {{ $application['details']['courses']['colleges']['college_name'] ?? '' }}
                                     </td>
                                     <td class="capitalize">{{ $offer['scholarships']['description'] }}</td>
                                     <td>

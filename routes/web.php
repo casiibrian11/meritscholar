@@ -62,7 +62,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         // Admin | Director routes
         Route::middleware(['admin'])->group(function () {
             Route::get('/dashboard', [Controllers\DashboardController::class, 'index']);
-            Route::get('/list', [Controllers\ApplicationsController::class, 'masterlist']);
+            Route::get('/scholarship/applications/list', [Controllers\ApplicationsController::class, 'masterlist']);
             Route::get('/emails', [Controllers\EmailsController::class, 'emailReport']);
             Route::get('/send-sms', [Controllers\EmailsController::class, 'sendSms']);
             

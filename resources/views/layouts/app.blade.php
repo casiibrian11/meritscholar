@@ -193,17 +193,9 @@ label{
                                 <li class="nav-item">
                                     <a class="nav-link"  href="/">Home</a>
                                 </li>
-
-                                @php
-                                    $info = \App\Models\StudentInformation::where('user_id', Auth::user()->id)->first();
-                                @endphp
-
-                                @if (!empty($info) && $info['completed'])
-                                    <li class="nav-item">
-                                        <a class="nav-link"  href="/scholarships/list">List of scholarships</a>
-                                    </li>
-                                @endif
-
+                                <li class="nav-item">
+                                    <a class="nav-link"  href="/scholarships/list">List of scholarships</a>
+                                </li>
                             @endif
                         @endif
                     </ul>

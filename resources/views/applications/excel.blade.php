@@ -21,6 +21,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Course,&nbsp;Year&nbsp;&amp;&nbsp;Section</th>
+                            <th>College</th>
                             <th>Scholarship</th>
                             <th>S.Y.</th>
                             <th><center>Status</center></th>
@@ -43,6 +44,9 @@
                                         @endphp
                                     @endif
                                     {{ $course['course_code'] ?? "" }} {{ $course['year_level'] ?? '' }} - {{ $course['section'] ?? '' }}
+                                </td>
+                                <td style="text-transform:capitalize !important;">
+                                    {{ $application['details']['courses']['colleges']['college_code'] ?? '' }}
                                 </td>
                                 <td style="text-transform:capitalize;">{{ $offer['scholarships']['description'] }}</td>
                                 <td>{{ $sy['semester'] }} {{ $sy['semester'] <> 'Summer' ? 'Semester' : '' }} {{ $sy['start_year'] }} - {{ $sy['end_year'] }}</td>

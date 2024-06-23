@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\App;
 
 use App\Libraries\AppHelper;
 use App\Libraries\Brevo;
+use App\Libraries\Notifications;
 
 use App\Models\Scholarship;
 use App\Models\Requirement;
@@ -184,7 +185,22 @@ class ApplicationsController extends Controller
         $data['applications'] = Application::with('users')
                                     ->with('school_years')
                                     ->with('scholarship_offers')
+                                    ->with('details')
                                     ->where('completed', true)
+                                    ->when(!empty($data['college_id']), function($query) use ($data){
+                                        $query->whereHas('details', function($query) use ($data){
+                                            $query->whereHas('courses', function($query) use ($data){
+                                                $query->whereHas('colleges', function($query) use ($data){
+                                                    $query->where('college_id', $data['college_id']);
+                                                });
+                                            });
+                                        });
+                                    })
+                                    ->when(!empty($data['course_id']), function($query) use ($data){
+                                        $query->whereHas('details', function($query) use ($data){
+                                            $query->where('course_id', $data['course_id']);
+                                        });
+                                    })
                                     ->when(!empty($data['keyword']), function($query) use ($data) {
                                         $query->whereHas('users', function ($query) use ($data) {
                                             $query->where('first_name', 'LIKE', "%{$data['keyword']}%")
@@ -282,7 +298,7 @@ class ApplicationsController extends Controller
             $messageContent = "";
             $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
             $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} is now under review.<br /><br />You will receive a separate notification regarding the status of your application.";
-            self::notify($application['user_id'], $message, $messageContent);
+            Notifications::notify($application['user_id'], $message, $messageContent);
 
             $application->update([ 'under_review' => false ]);
         }
@@ -407,7 +423,7 @@ class ApplicationsController extends Controller
         $messageContent = "";
         $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
         $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} has been {$status}.<br /><br />Login to your account to check for any additional information.";
-        self::notify($application['user_id'], 'Your '.strtolower($message), $messageContent);
+        Notifications::notify($application['user_id'], 'Your '.strtolower($message), $messageContent);
 
         return redirect()->back()->with('success', $message." A notification has also been sent to the student.");
     }
@@ -425,35 +441,6 @@ class ApplicationsController extends Controller
         } else {
             abort(401);
         }
-    }
-
-    public static function notify($userId, $subject = "", $message = "")
-    {
-        $user = User::where('id', $userId)->first();
-
-        if (empty($user)) {
-            return null;
-        }
-
-        $brevo = new Brevo();
-
-        $name = "{$user['first_name']} {$user['last_name']}";
-        $from = config('mail')['from']['name'];
-        $message .= "<br /><br />Regards, <br /><br /> {$from}";
-
-        $email = $user['email'];
-
-        $mail = [
-            'htmlContent' => $message,
-            'name' => $name,
-            'email' => $email,
-            'subject' => $subject,
-            'senderEmail' => config('mail')['from']['address'],
-            'senderName' => config('mail')['from']['name']
-        ];
-
-        $result = $brevo->executeEmailsBatchSend($mail);
-        return $result;
     }
 
     public function masterlist(Request $request)

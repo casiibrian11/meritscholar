@@ -263,9 +263,10 @@
                                 <i class="fa fa-info-circle"></i> STATUS LEGENDS
                                 <ul class="mt-2">
                                     <li><b>This is irreversible!</b> Status will be updated to <span class="badge bg-success">submitted</span> once you click "Complete Application" from the submission of requirements. </li>
-                                    <li><span class="badge bg-primary">being reviewed</span> once you the administrator viewed your application.</li>
+                                    <li><span class="badge bg-primary">being reviewed</span> once the administrator viewed your application.</li>
                                     <li><span class="badge bg-success">approved</span> means requirements are valid.</li>
                                     <li><span class="badge bg-danger">denied</span> if there's something wrong with your application.</li>
+                                    <li>You will receive an email notification if any status update is made.</li>
                                     <li class="mt-3">
                                         <a href="#" class="btn btn-danger small">
                                             <i class="fa fa-trash"></i> Withdraw Application
