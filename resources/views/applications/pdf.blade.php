@@ -23,6 +23,8 @@
                                 <th>College</th>
                                 <th>Scholarship</th>
                                 <th>S.Y.</th>
+                                <th>Appplication&nbsp;date/time</th>
+                                <th>Updated&nbsp;at</th>
                                 <th><center>Status</center></th>
                             </tr>
                         </thead>
@@ -56,6 +58,16 @@
                                             Semester
                                         @endif
                                         {{ $sy['start_year'] }} - {{ $sy['end_year'] }}
+                                    </td>
+                                    <td>
+                                        @if (strtotime($application['date_completed']) !== false)
+                                            {{ now()->parse($application['date_completed'])->format('M, j Y h:i a') }}
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if (strtotime($application['date_updated']) !== false)
+                                            {{ now()->parse($application['date_updated'])->format('M, j Y h:i a') }}
+                                        @endif
                                     </td>
                                     <td class="text-center">
                                         @if (is_null($application['approved']))
