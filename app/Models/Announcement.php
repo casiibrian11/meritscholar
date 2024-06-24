@@ -18,7 +18,9 @@ class Announcement extends Model
         'content',
         'visible',
         'notify_users',
-        'user_id'
+        'user_id',
+        'created_at',
+        'updated_at'
     ];
 
     public function users()

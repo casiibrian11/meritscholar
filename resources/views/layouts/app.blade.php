@@ -198,6 +198,13 @@ label{
                                 </li>
                             @endif
                         @endif
+                        @if (\App\Models\Announcement::where('visible', true)->count() > 0)
+                        <li class="nav-item">
+                            <a class="nav-link"  href="/page/announcements">
+                                <i class="fa fa-bullhorn"></i> Announcements
+                            </a>
+                        </li>
+                        @endif
                     </ul>
 
                     <!-- Right Side Of Navbar -->

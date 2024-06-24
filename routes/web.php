@@ -23,6 +23,7 @@ Route::get('/unauthorized', [Controllers\AccountsController::class, 'unauthorize
 Route::post('/verify-email', [Controllers\AccountsController::class, 'verifyEmail'])->name('verify-email');
 
 Auth::routes();
+Route::get('/page/announcements', [Controllers\AnnouncementsController::class, 'announcements']);
 
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/send-verification', [Controllers\HomeController::class, 'sendVerification']);

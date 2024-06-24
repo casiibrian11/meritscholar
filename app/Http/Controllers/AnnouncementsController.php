@@ -110,5 +110,11 @@ class AnnouncementsController extends Controller
             ]);
         }
     }
+
+    public function announcements(Request $request)
+    {
+        $announcements = Announcement::where('visible', true)->orderBy('created_at', 'DESC')->get();
+        return view('frontend.announcements', compact('announcements'));
+    }
 }
 
