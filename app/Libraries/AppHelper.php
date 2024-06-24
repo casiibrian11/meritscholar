@@ -93,4 +93,28 @@ class AppHelper
 
         return false;
     }
+
+    public static function notifyAdmin()
+    {
+        $query = new Setting; 
+        $notify = $query->where('name', 'notify_admin')->first();
+
+        if (!empty($notify) && $notify['value']) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function notifySupport()
+    {
+        $query = new Setting; 
+        $notify = $query->where('name', 'notify_support')->first();
+
+        if (!empty($notify) && $notify['value']) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -41,7 +41,8 @@ class SettingsController extends Controller
             ]);
         }
 
-        if ($name == 'office_hours_only' || $name == 'allow_weekends') {
+        $array = ['office_hours_only', 'allow_weekends', 'notify_admin', 'notify_support'];
+        if (in_array($name, $array)) {
             $data['value'] = ($data['value'] == 'true') ?? false;   
         }
 

@@ -74,6 +74,17 @@
                         <small>Users can only send applications during weekdays.</small>
                     </div>
                 @endif
+
+                <div class="form-group mt-3">
+                    <p class="m-0">
+                        <input type="checkbox" id="notify_admin"> Send notification to <span class="badge bg-light text-dark border border-secondary">admin</span> when an application is submitted. <small>(active accounts only)</small>
+                    </p>
+                </div>
+                <div class="form-group mt-3">
+                    <p class="m-0">
+                        <input type="checkbox" id="notify_support"> Send notification to <span class="badge bg-light text-dark border border-secondary">supports</span> when an application is submitted. <small>(active accounts only)</small>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -131,15 +142,21 @@ function toggleOfficeHours(office_hours_only) {
 }
     $(function(){
         $('.custom-alert').hide();
-        $('#office_hours_only, #allow_weekends').on('change', function(){
+        $('#office_hours_only, #allow_weekends, #notify_admin, #notify_support').on('change', function(){
             var value = $(this).prop('checked');
             var name = $(this).attr('id');
 
             if (name == 'office_hours_only') {
                 toggleOfficeHours(value);
             }
+            var reload = true;
 
-            saveSettings(name, value, true);
+            if (name == 'notify_admin' || name == 'notify_support') {
+                var reload = false;
+            }
+            
+
+            saveSettings(name, value, reload);
         });
 
         $('.input').on('blur', function(){
@@ -165,6 +182,22 @@ function toggleOfficeHours(office_hours_only) {
                         $('#allow_weekends').prop('checked', true);
                     @else
                         $('#allow_weekends').prop('checked', false);
+                    @endif
+                @endif
+
+                @if ($setting['name'] == 'notify_admin')
+                    @if ($setting['value'])
+                        $('#notify_admin').prop('checked', true);
+                    @else
+                        $('#notify_admin').prop('checked', false);
+                    @endif
+                @endif
+
+                @if ($setting['name'] == 'notify_support')
+                    @if ($setting['value'])
+                        $('#notify_support').prop('checked', true);
+                    @else
+                        $('#notify_support').prop('checked', false);
                     @endif
                 @endif
 
