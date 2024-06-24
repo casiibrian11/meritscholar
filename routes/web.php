@@ -64,8 +64,11 @@ Route::middleware(['auth', 'active'])->group(function () {
 
             Route::get('/dashboard', [Controllers\DashboardController::class, 'index']);
             Route::get('/scholarship/applications/list', [Controllers\ApplicationsController::class, 'masterlist']);
-            Route::get('/emails', [Controllers\EmailsController::class, 'emailReport']);
-            Route::get('/send-sms', [Controllers\EmailsController::class, 'sendSms']);
+
+            Route::group(['middleware' => ['support'], 'prefix' => 'emails'], function () {
+                Route::get('/', [Controllers\EmailsController::class, 'emailReport']);
+            });
+            
             
             // Admin only Routes            
             Route::group(['middleware' => ['adminOnly'], 'prefix' => 'users'], function () {

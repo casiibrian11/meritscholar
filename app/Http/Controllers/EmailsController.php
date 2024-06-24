@@ -10,20 +10,28 @@ class EmailsController extends Controller
 {
     public function emailReport(Request $request) 
     {
-        $email = '0104mcmxcvi@gmail.com';
-        $result = (new Brevo())->getEmailReportPerEmail($email);
-        dd($result);
+        $data = $request->all();
+        $email = $data['email'] ?? '';
+        $startDate = $data['start_date'] ?? '';
 
-        $result = (new Brevo())->getEmailReport($email);
+        if (empty($startDate)) {
+            $startDate = now()->startOfMonth()->format('Y-m-d');
+        }
 
-        dd($result);
-    }
+        if (isset($data['email']) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return redirect('/emails')->with('error', "Invalid email. You must search using a valid email.");
+        }
 
-    public function sendSms(Request $request)
-    {
-        $recipient = '+639533717683';
-        $content = "This is a test sms";
-        $result = (new Brevo())->sendSms($recipient, $content);
-        dd($result);
+        $result['events'] = [];
+        if (!empty($email)) {
+            $result = (new Brevo())->getEmailReport($startDate, $email);
+        } else {
+            $result = (new Brevo())->getEmailReport($startDate);
+        }
+        
+        $result['emails'] = ['0104mcmxcvi@gmail.com', 'reymond@vernaschediewelt.com', 'r3ym0nd.gln@gmail.com'];
+        $result['email'] = $email;
+
+        return view('emails.index', compact('result'));
     }
 }

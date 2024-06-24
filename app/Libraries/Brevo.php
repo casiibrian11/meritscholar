@@ -108,7 +108,7 @@ class Brevo
         return $data;
     }
 
-    public function getEmailReportPerEmail($email, $startDate = "", $endDate = "")
+    public function getEmailReportPerEmail($email)
     {
         $client = new Client();
 
@@ -122,14 +122,14 @@ class Brevo
         return json_decode($response->getBody()->getContents(), true);
     }
 
-    public function getEmailReport($startDate = "")
+    public function getEmailReport($startDate = "", $email = "")
     {
         $apiInstance = new TransactionalEmailsApi(
             new Client(),
             $this->config
         );
 
-        $limit = 100;
+        $limit = 1000;
         $offset = 0;
 
         if (empty($startDate)) {
@@ -140,7 +140,11 @@ class Brevo
 
         $result = [];
         try {
-            $result = $apiInstance->getEmailEventReport($limit, $offset, $startDate, $endDate);
+            if (empty($email)) {
+                $result = $apiInstance->getEmailEventReport($limit, $offset, $startDate, $endDate);
+            } else {
+                $result = $apiInstance->getEmailEventReport($limit, $offset, $startDate, $endDate, null, $email);
+            }
             return json_decode($result, true);
         } catch (Exception $e) {
             $result['error'] = 'Exception when calling TransactionalEmailsApi->getEmailEventReport: '.$e->getMessage();

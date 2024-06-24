@@ -442,11 +442,6 @@ table thead tr th{
     width:100vh;
     max-width:100%;
   }
-
-  .main-body .table-container {
-    overflow-x:scroll;
-    overflow-y:hidden;
-  }
   
   .main-body .table-container table {
     width:1250px;
@@ -457,6 +452,10 @@ table thead tr th{
     font-size:11px !important;
     border-radius:0 !important;
   }
+}
+.main-body .table-container {
+    overflow-x:scroll;
+    overflow-y:hidden;
 }
 </style>
 @include('layouts.partials._flash')
@@ -516,6 +515,10 @@ table thead tr th{
                             <a class="nav-link" href="/users">
                                 <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
                                 Users
+                            </a>
+                            <a class="nav-link" href="/emails">
+                                <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i></div>
+                                Email Activities
                             </a>
                             <a class="nav-link" href="/settings">
                                 <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
@@ -581,6 +584,10 @@ table thead tr th{
                             <a class="nav-link" href="/dashboard">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
+                            </a>
+                            <a class="nav-link" href="/emails">
+                                <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i></div>
+                                Email Activities
                             </a>
                             <a class="nav-link" href="/scholarship/applications">
                                 <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
