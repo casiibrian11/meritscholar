@@ -6,8 +6,8 @@
     <div class="col-sm-12 p-0">
         <div class="card p-0 main-body">
             <div class="card-body">
-                <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
-                    <div class="btn-group" role="group" aria-label="User Types">
+                <div class="btn-toolbar flex-wrap mb-3" role="toolbar" aria-label="Toolbar with button groups">
+                    <div class="btn-group flex-wrap" role="group" aria-label="User Types">
                         <a href="/users" type="button" class="btn btn-sm @if (empty($data['user_type'])) btn-success @else btn-outline-secondary @endif">All</a>
                         <a href="?user_type=admin" type="button" class="btn btn-sm @if ($data['user_type'] == 'admin') btn-success @else btn-outline-secondary @endif">Admin</a>
                         <a href="?user_type=support" type="button" class="btn btn-sm @if ($data['user_type'] == 'support') btn-success @else btn-outline-secondary @endif">Support</a>
@@ -16,13 +16,13 @@
                     </div>
                     &nbsp;
                     &nbsp;
-                    <div class="btn-group" role="group" aria-label="Status">
+                    <div class="btn-group flex-wrap" role="group" aria-label="Status">
                         <a href="?verified=yes" type="button" class="btn btn-sm @if (!empty($data['verified']) && $data['verified'] === 'yes') btn-success @else btn-outline-secondary @endif">Verified</a>
                         <a href="?verified=no" type="button" class="btn btn-sm @if (!empty($data['verified']) && $data['verified'] === 'no') btn-success @else btn-outline-secondary @endif">Not Verified</a>
                     </div>
                     &nbsp;
                     &nbsp;
-                    <div class="btn-group" role="group" aria-label="Active">
+                    <div class="btn-group flex-wrap" role="group" aria-label="Active">
                         <a href="?active=yes" type="button" class="btn btn-sm @if (!empty($data['active']) && $data['active'] === 'yes') btn-success @else btn-outline-secondary @endif">Active</a>
                         <a href="?active=no" type="button" class="btn btn-sm @if (!empty($data['active']) && $data['active'] === 'no') btn-success @else btn-outline-secondary @endif">Disabled</a>
                     </div>

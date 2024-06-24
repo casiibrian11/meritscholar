@@ -2,37 +2,31 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>Merit Scholarship Program Online Application | ISU - Main Campus</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
 
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <link rel="stylesheet" href="{{asset('plugins/fontawesome/css/all.min.css')}}">
+    <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('css/w3.css')}}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
-    {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script> -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
-
-    <link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <script src="{{ asset('js/slim.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('plugins/js/bootstrap.min.js') }}"></script>
+    
     <script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/app.js') }}"></script>
     <script>
@@ -360,7 +354,7 @@ label{
     color:red;
 }
 .alert-block{
-    position:absolute !important;
+    position:fixed !important;
     color:#000 !important;
     top:0;
     left:0;
@@ -437,14 +431,18 @@ table thead tr th{
 }
 
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 900px) {
   .main-body {
-    width:100vh;
-    max-width:100%;
+    width:100vh !important;
+    max-width:100% !important;
   }
   
   .main-body .table-container table {
-    width:1250px;
+    width:1250px !important;
+  }
+  .table-container{
+    overflow-x:scroll;
+    overflow-y:hidden;
   }
 
   .btn-group .btn, .btn-group a{
@@ -452,27 +450,29 @@ table thead tr th{
     font-size:11px !important;
     border-radius:0 !important;
   }
+  .w3-modal-content .alert{
+    position:fixed !important;
+    width:100vh !important;
+    max-width:100% !important;
+    left:0;
+    right:0;
+    top:0;
+    margin-top:100px;
+  }
 }
 
-/* width */
 ::-webkit-scrollbar {
   width: 10px;
 }
-
-/* Track */
 ::-webkit-scrollbar-track {
   box-shadow: inset 0 0 5px grey;
 }
- 
-/* Handle */
 ::-webkit-scrollbar-thumb {
   background: #aaa;
 }
-
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #eee; 
-}
+} 
 </style>
 @include('layouts.partials._flash')
 <body class="sb-nav-fixed">
@@ -480,7 +480,7 @@ table thead tr th{
     <div class="w3-modal" id="loader">
         <div class="w3-modal-content w-25 w3-transparent">
             <center>
-                <p class="alert alert-info p-0 shadow-lg">
+                <p class="alert alert-success p-0 shadow-lg flex-wrap">
                     <b>Processing...</b>
                 </p>
             </center>
@@ -654,7 +654,7 @@ table thead tr th{
     <source src="{{ asset('sounds/bell.mp3') }}" type="audio/mpeg">
     <source src="{{ asset('sounds/bell.ogg') }}" type="audio/ogg">
 </audio>
-<button type="button" class="btn play">Play</button>
+<button type="button" class="btn play d-none">Play</button>
     &copy; <?php echo date('Y'); ?> OSAS - Scholarship Application Systems. All rights reserved.
 </footer>
 
@@ -663,8 +663,6 @@ table thead tr th{
 </div>
 
 <!-- Include Font Awesome JS (optional for some features) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script src="{{ asset('js/scripts.js') }}"></script>
 </body>
 </html>
