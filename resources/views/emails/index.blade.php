@@ -34,7 +34,6 @@
                                     <th>Subject</th>
                                     <th>Status</th>
                                     <th>Sender</th>
-                                    <th>IP</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -65,7 +64,6 @@
                                         <td><span class="badge bg-light text-dark">{{ $email['subject'] ?? ''}}</span></td>
                                         <td><span class="badge {{ $bg }} text-dark text-center">{{ $email['event'] ?? ''}}</span></td>
                                         <td><span class="badge bg-light text-dark">{{ $email['from'] ?? ''}}</span></td>
-                                        <td><span class="badge bg-light text-dark">{{ $email['ip'] ?? ''}}</span></td>
                                     </tr>
                                 @endforeach
                             </tbody>

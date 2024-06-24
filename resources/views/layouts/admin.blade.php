@@ -453,9 +453,25 @@ table thead tr th{
     border-radius:0 !important;
   }
 }
-.main-body .table-container {
-    overflow-x:scroll;
-    overflow-y:hidden;
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #aaa;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #eee; 
 }
 </style>
 @include('layouts.partials._flash')
