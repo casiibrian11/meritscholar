@@ -11,9 +11,13 @@ class Announcement extends Model
 
     protected $table = 'announcements';
 
+    public $timestamps = false;
+
     protected $fillable  = [
+        'title',
         'content',
         'visible',
+        'notify_users',
         'user_id'
     ];
 

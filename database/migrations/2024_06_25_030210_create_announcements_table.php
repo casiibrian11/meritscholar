@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('announcements', function (Blueprint $table) {
             $table->id();
+            $table->text('title');
             $table->longText('content');
             $table->boolean('visible')->default(1);
+            $table->boolean('notify_users')->default(false);
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             

@@ -21,6 +21,7 @@
                         <table class="table table-bordered table-hover table-condensed table-striped text-sm small">
                             <thead>
                                 <tr>
+                                    <th>Title</th>
                                     <th>Content</th>
                                     <th>Page Visibility</th>
                                     <th></th>
@@ -30,7 +31,18 @@
                             <tbody>
                                 @foreach ($data['announcements'] as $row)
                                     <tr>
-                                        <td class="w-75">{!! $row['content'] ?? '' !!}</td>
+                                        <td class="w-25">{{ $row['title'] ?? '' }}</td>
+                                        <td class="w-50">
+                                            {!! $row['content'] ?? '' !!}
+                                            <span class="badge bg-light text-dark">
+                                                Created: {{ now()->parse($row['created_at'])->format('M j, Y h:ia') }}
+                                            </span>
+                                            @if (!empty($row['updated_at']))
+                                                <span class="badge bg-light text-dark">
+                                                    Updated: {{ now()->parse($row['updated_at'])->format('M j, Y h:ia') }}
+                                                </span>
+                                            @endif
+                                        </td>
                                         <td>
                                             <a href="/announcements/{{ $row['id'] }}/visibility" class="visibility">
                                                 @if ($row['visible'])

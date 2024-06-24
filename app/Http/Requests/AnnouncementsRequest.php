@@ -25,6 +25,7 @@ class AnnouncementsRequest extends FormRequest
     {
         return [
             'id' => 'nullable',
+            'title' => 'required|string',
             'content' => 'required',
             'visible' => 'required|boolean',
         ];

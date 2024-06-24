@@ -55,12 +55,13 @@ class AnnouncementsController extends Controller
         try {
 
             if(isset($key['id'])) {
-
+                $data['updated_at'] = now();
                 Announcement::where('id', $key['id'])->update($data);
                 $message = AppHelper::updated();
                 
             } else {
-
+                $data['created_at'] = now();
+                $data['updated_at'] = null;
                 Announcement::create($data);
                 $message = AppHelper::saved();
                 

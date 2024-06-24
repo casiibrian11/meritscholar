@@ -10,6 +10,11 @@
 <div class="row">
     <div class="col-sm-12 p-0">
         <div class="card p-0 main-body">
+            <div class="card-header text-right">
+                <a href="/announcements/manage" class="btn btn-xs btn-success add-new p-1 px-3">
+                    <i class="fa fa-plus"></i> CREATE NEW
+                </a>
+            </div>
             <div class="card-body px-5">
             <form action="" method="POST" id="form">
                 <div class="modal-body">
@@ -20,9 +25,15 @@
                     <input type="hidden" name="id" id="id" readonly>
                     <input type="hidden" name="content" id="content" value="{{ $data['announcement']['content'] ?? '' }}" readonly>
                     <input type="hidden" name="visible" id="visible" value="0" readonly>
+
+                    <div class="form-floating mb-2">
+                        <input type="text" id="title" name="title" class="form-control" placeholder="Brief title of the announcement..." required>
+                            <label for="title">Brief title of the announcement... <span class="required">*</span></label>
+                    </div>
+
                     <div class="form-group mb-2">
                         <label for="content">Content <span class="required">*</span></label>
-                        <textarea class="form-control" placeholder="Detailed description of the requirement..." 
+                        <textarea class="form-control" placeholder="Content to post as announcement..." 
                             style="height:100px;" id="editor">{{ old('description', '') }}</textarea>
                     </div>
 
@@ -62,6 +73,7 @@
             }
 
             $('#id').val('{{ $data["announcement"]["id"] }}');
+            $('#title').val('{{ $data["announcement"]["title"] }}');
         @endif
 
         $('.save-announcement').on('click', function(){
