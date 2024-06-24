@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('settings', function (Blueprint $table) {
+        Schema::create('announcements', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('value')->nullable();
+            $table->longText('content');
+            $table->boolean('visible')->default(1);
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
             
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('settings');
+        Schema::dropIfExists('announcements');
     }
 };

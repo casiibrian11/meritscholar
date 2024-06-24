@@ -536,6 +536,10 @@ table thead tr th{
                                 <div class="sb-nav-link-icon"><i class="fas fa-envelope"></i></div>
                                 Email Activities
                             </a>
+                            <a class="nav-link" href="/announcements">
+                                <div class="sb-nav-link-icon"><i class="fas fa-bullhorn"></i></div>
+                                Announcements
+                            </a>
                             <a class="nav-link" href="/settings">
                                 <div class="sb-nav-link-icon"><i class="fas fa-cogs"></i></div>
                                 System Settings

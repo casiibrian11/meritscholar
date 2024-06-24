@@ -68,6 +68,14 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::group(['middleware' => ['support'], 'prefix' => 'emails'], function () {
                 Route::get('/', [Controllers\EmailsController::class, 'emailReport']);
             });
+
+            Route::group(['middleware' => ['support'], 'prefix' => 'announcements'], function () {
+                Route::get('/', [Controllers\AnnouncementsController::class, 'index']);
+                Route::get('/manage', [Controllers\AnnouncementsController::class, 'manage']);
+                Route::post('/save', [Controllers\AnnouncementsController::class, 'save'])->name('announcements-save');
+                Route::post('/delete', [Controllers\AnnouncementsController::class, 'delete'])->name('announcements-delete');
+                Route::get('/{announcement}/visibility', [Controllers\AnnouncementsController::class, 'visibility']);
+            });
             
             
             // Admin only Routes            
