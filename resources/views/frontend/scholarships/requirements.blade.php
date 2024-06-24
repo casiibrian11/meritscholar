@@ -255,7 +255,7 @@
         </div>
 
 
-        @if (!$data['application']['completed'] && is_null($data['application']['under_review']) && is_null($data['application']['approved  ']))
+        @if (!$data['application']['completed'] && is_null($data['application']['approved']))
         <div class="col-sm-12 p-4 border rounded-3" style="background:#006400 !important;color:#FFF !important;">
             @if (!empty($data['application']['scholarship_offers']['scholarships']['requirements']))
                 @php

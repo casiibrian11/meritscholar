@@ -384,7 +384,24 @@ class ApplicationsController extends Controller
             'request_to_change' => true
         ]);
 
-        return redirect()->back()->with('success', 'Application status has been updated.');
+        $application = Application::where('id', $application['id'])
+                        ->where('user_id', $application['user_id'])
+                        ->with('scholarship_offers')
+                        ->with('school_years')
+                        ->first();
+
+        $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+        $sy = $application['school_years'];
+        $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
+        $name = ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']);
+        $messageContent = "";
+        $messageContent .= "Hi {$name}, <br /><br />";
+        $messageContent .= "There are some requested changes to your application for <b>{$scholarship}</b> {$semester}. 
+                            Failure to comply to this request might result for your application to be denied.";
+
+        Notifications::notify($application['user_id'], "Requested changes for {$scholarship}", $messageContent);
+
+        return redirect()->back()->with('success', 'Application status has been updated. Applicant has also been notified.');
     }
 
     public function updateStatus(Application $application, Request $request)

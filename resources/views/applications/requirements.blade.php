@@ -105,13 +105,13 @@
                         </b>
                     </p>
                     @if (is_null($data['application']['approved']))
-                        @if (!$data['application']['request_to_change'])
+                        {{-- @if (!$data['application']['request_to_change']) --}}
                             <a href="/scholarship/applications/{{ $data['application']['id'] }}/update-status?approved=true"
                                 class="btn btn-sm btn-success p-0 px-3 approval"
                                 data-status="approved">
                                 <i class="fa fa-check"></i> Approve
                             </a>
-                        @endif
+                        {{-- @endif --}}
                         <a href="/scholarship/applications/{{ $data['application']['id'] }}/update-status?approved=false" 
                             class="btn btn-sm btn-danger p-0 px-3 approval"
                             data-status="denied">

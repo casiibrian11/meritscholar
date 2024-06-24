@@ -493,7 +493,7 @@ class ScholarshipsController extends Controller
         $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
         $name = ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']);
         $messageContent = "";
-        $messageContent .= "Hi {$name} <br /><br />";
+        $messageContent .= "Hi {$name}, <br /><br />";
         $messageContent .= "We have received your application for <b>{$scholarship}</b> {$semester}. You will receive a separate email notification regarding the status of your application.";
         Notifications::notify($application['user_id'], "We received your application for {$scholarship}", $messageContent);
 
