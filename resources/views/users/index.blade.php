@@ -64,7 +64,7 @@
                                     <td class="capitalize">{{ $user['last_name'] }}, {{ $user['first_name'] }} {{ $user['middle_name'] }} {{ $user['name_extension'] }}</td>
                                     <td>{{ $user['email'] }}</td>
                                     <td>
-                                        <span class="badge @if ($user['user_type'] == 'admin') bg-primary @elseif ($user['user_type'] == 'director') bg-info @else bg-warning @endif">{{ $user['user_type'] }}</span>
+                                        <span class="badge @if ($user['user_type'] == 'admin') bg-primary @elseif ($user['user_type'] == 'director' || $user['user_type'] == 'support') bg-info @else bg-warning @endif">{{ $user['user_type'] }}</span>
                                         @if (Auth::user()->id <> $user['id'])
                                             <select name="user_type" class="user_type" id="user_type{{ $user['id'] }}" data-id="{{ $user['id'] }}" data-user_type="{{ $user['user_type'] }}">
                                                 <option value="admin" @if($user['user_type'] == 'admin') selected @endif>admin</option>

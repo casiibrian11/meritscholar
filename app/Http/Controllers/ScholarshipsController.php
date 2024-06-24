@@ -491,10 +491,14 @@ class ScholarshipsController extends Controller
         $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
         $sy = $application['school_years'];
         $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
+        $name = ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']);
         $messageContent = "";
-        $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
+        $messageContent .= "Hi {$name} <br /><br />";
         $messageContent .= "We have received your application for <b>{$scholarship}</b> {$semester}. You will receive a separate email notification regarding the status of your application.";
         Notifications::notify($application['user_id'], "We received your application for {$scholarship}", $messageContent);
+
+        $messageContentForNotification = "<b>{$name}</b> submitted an application for <b>{$scholarship}</b> {$semester}. Login to your account to review the application. ";
+        self::notify($messageContentForNotification);
 
         return redirect()->back()->with('success', "You're application has been submitted. Wait for notifications to your email regarding your application.");
     }
@@ -595,5 +599,95 @@ class ScholarshipsController extends Controller
         $application->forceDelete();
 
         return redirect()->back()->with('success', 'Your application has been withdrawn.');
+    }
+
+    public static function notify($messageContent)
+    {
+        $notifyAdmin = AppHelper::notifyAdmin();
+        $notifySupport = AppHelper::notifySupport();
+        $brevo = new Brevo();
+        $messageVersions = [];
+        $mail = [];
+
+        $subject = 'New scholarship application submitted.';
+        $site = config('app')['name'];
+        $from = config('mail')['from']['name'];
+
+        $closing = "<br /><br />
+                    <b>NOTE</b>: This is an automated notification. 
+                    You are receiving this because you are the :user_type for :site
+                    <br /><br />
+                    Regards, 
+                    <br /><br />
+                    <b>:from</b>";
+
+        if ($notifyAdmin || $notifySupport) {
+
+            if ($notifyAdmin) {
+                $admins = User::where('is_active', true)
+                                ->where('user_type', 'admin')
+                                ->get();
+                foreach ($admins as $user) {
+                    $name = ucwords($user['first_name'].' '.$user['last_name']);
+                    $greetings = "Hi {$name}, <br /><br />";
+                    $closing = "<br /><br />
+                                <b>NOTE</b>: This is an automated notification. 
+                                You are receiving this because you are the {$user['user_type']} for {$site}
+                                <br /><br />
+                                Regards, 
+                                <br /><br />
+                                {$from}";
+
+                    $mail = [
+                        'htmlContent' => $greetings.$messageContent.$closing,
+                        'name' => $name,
+                        'email' => $user['email'],
+                        'subject' => $subject
+                    ];
+
+                    $messageVersions[] = $brevo->getMessageVersions($mail);
+                }
+            }
+
+            if ($notifySupport) {
+                $supports = User::where('is_active', true)
+                                ->where('user_type', 'support')
+                                ->get();
+
+                foreach ($supports as $support) {
+                    $name = ucwords($support['first_name'].' '.$support['last_name']);
+                    $greetings = "Hi {$name}, <br /><br />";
+                    $closing = "<br /><br />
+                                <b>NOTE</b>: This is an automated notification. 
+                                You are receiving this because you are the {$support['user_type']} for {$site}
+                                <br /><br />
+                                Regards, 
+                                <br /><br />
+                                {$from}";
+
+                    $mail = [
+                        'htmlContent' => $greetings.$messageContent.$closing,
+                        'name' => $name,
+                        'email' => $support['email'],
+                        'subject' => $subject
+                    ];
+
+                    $messageVersions[] = $brevo->getMessageVersions($mail);
+                }
+            }
+
+            $mail = [
+                'senderEmail' => config('mail')['from']['address'],
+                'senderName' => config('mail')['from']['name'],
+                'defaultSubject' => $subject,
+                'defaultHtmlContent' => $messageContent
+            ];
+            
+            $data = $brevo->getPayload($mail, $messageVersions);
+            $result = $brevo->emailsBatchSend($data);
+            return $result;
+        }
+
+        return true;
     }
 }
