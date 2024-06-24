@@ -627,11 +627,6 @@ table thead tr th{
     <source src="{{ asset('sounds/bell.mp3') }}" type="audio/mpeg">
     <source src="{{ asset('sounds/bell.ogg') }}" type="audio/ogg">
 </audio>
-
-<audio id="music">
-    <source src="{{ asset('sounds/rick.mp3') }}" type="audio/mpeg">
-    <source src="{{ asset('sounds/rick.ogg') }}" type="audio/ogg">
-</audio>
 <button type="button" class="btn play">Play</button>
     &copy; <?php echo date('Y'); ?> OSAS - Scholarship Application Systems. All rights reserved.
 </footer>
