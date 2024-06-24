@@ -141,6 +141,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/{requirement}/request-to-change/{application}', [Controllers\ApplicationsController::class, 'requestToChange']);
                 Route::get('/{application}/update-status', [Controllers\ApplicationsController::class, 'updateStatus']);
                 Route::get('/{requirement}/requirements/download', [Controllers\ApplicationsController::class, 'download']);
+
+                Route::post('/new-applications', [Controllers\ApplicationsController::class, 'newApplications'])->name('new-applications');
             });
 
             Route::group(['middleware' => ['support'], 'prefix' => 'pdf'], function () {

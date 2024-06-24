@@ -34,6 +34,7 @@
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
     <script>
         var _token = $('meta[name=csrf-token').attr('content');
 
@@ -125,7 +126,23 @@
             return $(row).children("td").eq(index).text();
         }
 
+        function newApplications() {
+            $.ajax({
+                url:"{{ route('new-applications') }}",
+                method:'POST',
+                success:function(response){
+                    if (response > 0) {
+                        $('#newApplications').html('&nbsp;<span class="badge badge-sm bg-success shadow border border-white" style="color:#FFF !important;">'+response+'</span>');
+                    }
+                }
+            });
+        }
+
         $(function(){
+            newApplications();
+            const synth = window.speechSynthesis;
+            const voices = synth.getVoices();
+
             $('#simple').DataTable();
             $('#custom').DataTable({
                 ordering:false,
@@ -135,6 +152,17 @@
 
             $(document).on('click', '.alert-block', function(){
                 $('.alert-block').hide();
+            });
+
+            $(document).on('click', '.play', function(){
+                document.getElementById('audio').play();
+                setTimeout(function(){
+                    var utterance = new SpeechSynthesisUtterance("New application submitted.");
+                    utterance.volume = 100;
+                    utterance.rate = 1;
+                    utterance.voice = voices[1];
+                    synth.speak(utterance);
+                }, 2000);
             });
 
             $(document).on('click', '.close', function(){
@@ -260,6 +288,16 @@
                 var file = $(this).data('file');
                 $('#file .w3-modal-content').html('<center>'+file+'</center>');
                 document.getElementById('file').style.display='block';
+            });
+
+            $(document).on('click', function(){
+                document.getElementById('audio').pause();
+            });
+
+            var channel = Echo.private(`new-application`);
+            channel.listen('NewApplication', function(data) {
+                $('.play').trigger('click');
+                newApplications();
             });
         });
     </script>
@@ -423,7 +461,6 @@ table thead tr th{
 </style>
 @include('layouts.partials._flash')
 <body class="sb-nav-fixed">
-
 <div id="app">
     <div class="w3-modal" id="loader">
         <div class="w3-modal-content w-25 w3-transparent">
@@ -434,10 +471,6 @@ table thead tr th{
             </center>
         </div>
     </div>
-
-
-
-
 
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
@@ -536,9 +569,9 @@ table thead tr th{
                             </a>
                             <br />
 
-                            <a class="nav-link" href="/scholarship/applications">
+                            <a class="nav-link" href="/scholarship/applications" id="trigger">
                                 <div class="sb-nav-link-icon"><i class="fas fa-edit"></i></div>
-                                Manage&nbsp;Applications
+                                Manage&nbsp;Applications <span class="ml-3" id="newApplications"></span>
                             </a>
                             <a class="nav-link" href="/scholarship/applications/list">
                                 <div class="sb-nav-link-icon"><i class="fas fa-list"></i></div>
@@ -589,6 +622,17 @@ table thead tr th{
     </div>
 </div>
 <footer class="footer p-3 border">
+
+<audio id="audio">
+    <source src="{{ asset('sounds/bell.mp3') }}" type="audio/mpeg">
+    <source src="{{ asset('sounds/bell.ogg') }}" type="audio/ogg">
+</audio>
+
+<audio id="music">
+    <source src="{{ asset('sounds/rick.mp3') }}" type="audio/mpeg">
+    <source src="{{ asset('sounds/rick.ogg') }}" type="audio/ogg">
+</audio>
+<button type="button" class="btn play">Play</button>
     &copy; <?php echo date('Y'); ?> OSAS - Scholarship Application Systems. All rights reserved.
 </footer>
 

@@ -472,4 +472,14 @@ class ApplicationsController extends Controller
 
         return view('applications.masterlist', compact('data'));
     }
+
+    public function newApplications(Request $request)
+    {
+        $newApplications = Application::where('completed', true)
+                        ->where('approved', null)
+                        ->where('under_review', null)
+                        ->count();
+                        
+        return $newApplications;
+    }
 }

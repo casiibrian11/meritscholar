@@ -28,6 +28,7 @@ use App\Http\Requests\ApplicationDetailsRequest;
 
 use App\Libraries\Brevo;
 use App\Libraries\Notifications;
+use App\Events\NewApplication;
 
 class ScholarshipsController extends Controller
 {
@@ -487,6 +488,8 @@ class ScholarshipsController extends Controller
                 'date_completed' => now(),
             ]);
         }
+
+        broadcast(new NewApplication());
 
         $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
         $sy = $application['school_years'];
