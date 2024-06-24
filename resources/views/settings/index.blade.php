@@ -13,24 +13,24 @@
             <div class="col-sm-12 p-3">
                 <div class="form-group my-1">
                     <p class="m-0">
-                        <input type="checkbox" id="office_hours_only"> Only allow users to submit applications during office hours
+                        <input type="checkbox" id="office_hours_only"> Only allow applicants to submit applications during office hours
                     </p>
                 </div>
                 @if ($set['officeHoursOnly'])
                     @if (empty($set['start']['value']) || empty($set['end']['value']))
                         <div class="alert alert-danger p-1">
                             <small>
-                                Office hours still not set properly. Users can still send applications anytime of the day.
+                                Office hours still not set properly. Applicants can still send applications anytime of the day.
                             </small>
                         </div>
                     @else
                         <div class="alert alert-success p-1">
                             <small>
-                                Users will only be able to send applications during office hours.
+                                Applicants will only be able to send applications during the set office hours.
                                 @if ($set['pastOfficeHours'])
-                                    &nbsp;&nbsp;<li class="text-danger">It's beyond office hours. Users won't be able to send applications.</li>
+                                    &nbsp;&nbsp;<li class="text-danger">It's beyond office hours. Applicants won't be able to send applications.</li>
                                 @else
-                                    <li>Users will still be able to send applications at this time.</li>
+                                    <li>Applicants will still be able to send applications at this time.</li>
                                 @endif
                             </small>
                         </div>
@@ -38,7 +38,7 @@
                 @else
                     <div class="alert alert-success p-1">
                         <small>
-                            Users can send applications anytime of the day.
+                            Applicants can send applications anytime of the day.
                         </small>
                     </div>
                 @endif
@@ -47,7 +47,7 @@
                     @if (empty($set['start']['value']) || empty($set['end']['value']))
                         <small>
                             <div class="alert alert-danger p-1">
-                                You must also set office hours. If these are not set, the users will still be able to send applications anytime.
+                                You must also set office hours. If these are not set, the applicants will still be able to send applications anytime.
                             </div>
                         </small>
                     @endif
@@ -62,16 +62,16 @@
 
                 <div class="form-group mt-3">
                     <p class="m-0">
-                        <input type="checkbox" id="allow_weekends"> Allow users to send applications during weekends
+                        <input type="checkbox" id="allow_weekends"> Allow applicants to send applications during weekends
                     </p>
                 </div>
                 @if ($set['weekendsAllowed'])
                     <div class="alert alert-info p-1">
-                        <small>Users can send applications during weekends.</small>
+                        <small>Applicants can send applications during weekends.</small>
                     </div>
                 @else
                     <div class="alert alert-info p-1">
-                        <small>Users can only send applications during weekdays.</small>
+                        <small>Applicants can only send applications during weekdays.</small>
                     </div>
                 @endif
 
