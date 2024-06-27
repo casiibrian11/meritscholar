@@ -110,6 +110,7 @@ class DashboardController extends Controller
         $applicationsCounts = [];
         $scholarshipsLabels = [];
         $scholarshipsCounts = [];
+        $scholarshipsBg = [];
 
 
         foreach ($gender as $key => $value) {
@@ -146,6 +147,7 @@ class DashboardController extends Controller
 
             $scholarshipsLabels[] = strtoupper($scholarshipOffers[$offerId]['scholarships']['description']);
             $scholarshipsCounts[] = $scholarshipCount;
+            $scholarshipsBg[] = "#".rand(111111, 999999);
         }
 
         $data['genderLabels'] = $genderLabels;
@@ -159,6 +161,7 @@ class DashboardController extends Controller
 
         $data['scholarshipsLabels'] = $scholarshipsLabels;
         $data['scholarshipsCounts'] = $scholarshipsCounts;
+        $data['scholarshipsBg'] = $scholarshipsBg;
 
         return view('dashboard', compact('data'));
     }

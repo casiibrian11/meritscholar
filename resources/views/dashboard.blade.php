@@ -107,7 +107,7 @@
                 borderColor: '#FFF',
                 borderWidth: 1,
                 fill: true,
-                backgroundColor: '#006400'
+                backgroundColor: @json($data['scholarshipsBg'])
             }],
             options: {
                 indexAxis: 'y',
