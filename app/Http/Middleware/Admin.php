@@ -16,12 +16,6 @@ class Admin
      */
     public function handle(Request $request, Closure $next)
     {
-        $deadline = '2024-06-28';
-        
-        if (now()->gt($deadline)) {
-            abort( 403 );
-        }
-
         $userType = auth()->user()->user_type;
 
         if ($userType == 'admin' || $userType == 'director'  || $userType == 'support') {
