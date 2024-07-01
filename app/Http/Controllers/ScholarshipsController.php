@@ -197,6 +197,8 @@ class ScholarshipsController extends Controller
                                     ->get();
 
         $requirements = Requirement::where('visible', true)->get();
+
+        $data['categories'] = ScholarshipCategory::orderBy('sort_number', 'ASC')->get();
         
         $requirementsArray = [];
         foreach ($requirements as $requirement) {
@@ -701,5 +703,24 @@ class ScholarshipsController extends Controller
         }
 
         return true;
+    }
+
+    public function table(Request $request)
+    {
+        $data = $request->all();
+
+        $id = $data['id'] ?? '';
+        $html = "";
+
+        if (!empty($id)) {
+            $data['scholarships'] = Scholarship::where('scholarship_category_id', $id)->orderBy('sort_number', 'ASC')->get();
+            if (count($data['scholarships']) > 0){
+                $html = view('frontend.scholarships.table', compact('data'))->render();
+            }
+        }
+
+        return response()->json([
+            'html' => $html
+        ]);
     }
 }

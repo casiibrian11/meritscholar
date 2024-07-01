@@ -34,7 +34,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/home', [Controllers\HomeController::class, 'index'])->name('home');
         
         Route::middleware(['student'])->group(function () {
-            
+            Route::post('/page/scholarships-table', [Controllers\ScholarshipsController::class, 'table'])->name('scholarships-table');
+
             Route::get('/profile', [Controllers\AccountsController::class, 'index']);
             Route::get('/account', [Controllers\AccountsController::class, 'account']);
             Route::post('/account/update', [Controllers\AccountsController::class, 'update'])->name('account-update');
