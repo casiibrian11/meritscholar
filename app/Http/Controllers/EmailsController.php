@@ -15,7 +15,7 @@ class EmailsController extends Controller
         $startDate = $data['start_date'] ?? '';
 
         if (empty($startDate)) {
-            $startDate = now()->startOfMonth()->format('Y-m-d');
+            $startDate = now()->subDays(30)->format('Y-m-d');
         }
 
         if (isset($data['email']) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {

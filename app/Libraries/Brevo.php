@@ -133,7 +133,7 @@ class Brevo
         $offset = 0;
 
         if (empty($startDate)) {
-            $startDate = now()->startOfMonth()->format('Y-m-d'); 
+            $startDate = now()->subDays(30)->format('Y-m-d'); 
         }
 
         $endDate = now()->format('Y-m-d');
