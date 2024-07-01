@@ -26,7 +26,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $user_type = Auth::user()->user_type;
+        
+        if ($user_type == 'student') {
+            return redirect('/profile');
+        } else {
+            return redirect('/dashboard');
+        }
     }
 
     public function verification()
