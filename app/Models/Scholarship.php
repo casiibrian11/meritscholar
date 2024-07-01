@@ -20,7 +20,10 @@ class Scholarship extends Model
         'user_id',
         'visible',
         'active',
-        'deleted_at'
+        'deleted_at',
+        'sort_number',
+        'privilege',
+        'is_per_semester'
     ];
 
     public function categories()

@@ -125,6 +125,8 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/category/save', [Controllers\CategoriesController::class, 'save'])->name('category-save');
                 Route::post('/category/delete', [Controllers\CategoriesController::class, 'delete'])->name('category-delete');
                 Route::post('/category/sort', [Controllers\CategoriesController::class, 'sort'])->name('category-sort');
+                Route::post('/category/list', [Controllers\CategoriesController::class, 'list'])->name('scholarships-list');
+                Route::post('/sort', [Controllers\CategoriesController::class, 'scholarshipSort'])->name('scholarships-sort');
             });
 
             Route::group(['middleware' => ['adminOnly'], 'prefix' => 'requirements'], function () {

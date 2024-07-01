@@ -123,4 +123,40 @@ class CategoriesController extends Controller
             return response()->json(['error' => $e->errorInfo[2]]);
         }
     }
+
+    public function list(Request $request)
+    {
+        $data = $request->all();
+
+        if (!empty($data['id'])) {
+            $data['category'] = ScholarshipCategory::find($data['id']);
+            $data['scholarships'] = Scholarship::where('scholarship_category_id', $data['id'])
+                                        ->orderBy('sort_number', 'ASC')
+                                        ->get();
+        }
+
+        $html = view('scholarships.categories.list', compact('data'))->render();
+
+        return response()->json([
+            'html' => $html,
+        ]);
+    }
+
+    public function scholarshipSort(Request $request)
+    {
+        $id = $request->input('id');
+        $sort_number = $request->input('sort_number');
+        $data = Scholarship::find($id);
+        try {
+
+            $data->update(['sort_number' => $sort_number]);
+            
+            return response()->json([
+                'success' => AppHelper::updated(),
+            ]);
+
+        } catch(QueryException $e) {
+            return response()->json(['error' => $e->errorInfo[2]]);
+        }
+    }
 }
