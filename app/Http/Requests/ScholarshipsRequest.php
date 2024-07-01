@@ -27,6 +27,8 @@ class ScholarshipsRequest extends FormRequest
             'id' => 'nullable',
             'description' => 'required|string',
             'requirements' => 'nullable|array',
+            'privilege' => 'nullable|integer',
+            'is_per_semester' => 'nullable',
             'scholarship_category_id' => 'nullable|integer',
         ];
     }

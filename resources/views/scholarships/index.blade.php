@@ -110,6 +110,7 @@
                         <thead>
                             <tr>
                                 <th>Description</th>
+                                <th>Privilege</th>
                                 <th>Category</th>
                                 <th>Requirements</th>
                                 <th></th>
@@ -124,7 +125,17 @@
                             @else
                                 <tr>
                             @endif
-                                <td>{{ strtoupper($row['description']) }}</td>
+                                <td class="px-2">
+                                    <b>{{ strtoupper($row['description']) }}</b>
+                                </td>
+                                <td>
+                                    @if (!empty($row['privilege']))
+                                            &#x20b1;&nbsp;{{ number_format($row['privilege']) }}
+                                            @if ($row['is_per_semester'])
+                                            &nbsp;per&nbsp;semester
+                                            @endif
+                                    @endif
+                                </td>
                                 <td>{{ strtoupper($row['categories']['category_name'] ?? '') }}</td>
                                 <td>
                                     @php
@@ -172,6 +183,8 @@
                                                 data-id="{{ $row['id'] }}"
                                                 data-scholarship_category_id="{{ $row['scholarship_category_id'] }}"
                                                 data-description="{{ $row['description'] }}"
+                                                data-privilege="{{ $row['privilege'] }}"
+                                                data-is_per_semester="{{ $row['is_per_semester'] }}"
                                                 data-requirements="{{ $row['requirements'] }}">
                                                 <i class="fa fa-edit"></i>
                                             </a>
@@ -240,10 +253,18 @@
                     </select>
                     <label for="scholarship_category_id">Scholarship Category <span class="required">*</span></label>
                 </div>
-                <div class="form-floating mb-2">
-                    <input type="text" id="privilege" name="privilege" class="form-control" 
-                        placeholder="PRIVILEGE" autocomplete="off">
-                        <label for="privilege">PRIVILEGE <span class="required">*</span></label>
+                <div class="row mb-2">
+                    <input type="hidden" name="is_per_semester" id="is_per_semester" value="false" readonly>
+                    <div class="col-sm-8">
+                        <div class="form-floating">
+                            <input type="number" id="privilege" name="privilege" class="form-control" 
+                                placeholder="PRIVILEGE" autocomplete="off">
+                                <label for="privilege">PRIVILEGE</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 pt-3">
+                        <input type="checkbox" id="per_semester"> <label for="per_semester">PER SEMESTER</label>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="text-sm">Requirements for this scholarship <span class="required">*</span></label>
@@ -389,6 +410,26 @@ function loadForm(id)
                     $('#scholarships').addClass('d-none');
                 }
             });
+        });
+
+        $(document).on('click','#per_semester', function(){
+            var checked = $('#per_semester').prop('checked');
+
+            if (checked) {
+                $('#is_per_semester').val("true");
+            } else {
+                $('#is_per_semester').val("false");
+            }
+        });
+
+        $(document).on('click','.edit', function(){
+            var is_per_semester = $(this).data('is_per_semester');
+
+            if (is_per_semester) {
+                $('#per_semester').prop('checked', true);
+            } else {
+                $('#per_semester').prop('checked', false);
+            }
         });
     });
 </script>

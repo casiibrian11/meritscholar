@@ -13,7 +13,6 @@
             <tr>
                 <th></th>
                 <th>Description</th>
-                <th class="w-50">Category</th>
             </tr>
         </thead>
         <tbody id="sortable2">
@@ -21,7 +20,6 @@
                 <tr data-id="{{ $row['id'] }}">
                     <td id="sort_{{ $row['id'] }}">{{ $row['sort_number'] ?? '' }}</td>
                     <td>{{ strtoupper($row['description']) }}</td>
-                    <td>{{ strtoupper($row['categories']['category_name'] ?? '') }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -81,6 +81,11 @@ class ScholarshipsController extends Controller
 
         $validated['description'] = strtolower($validated['description']);
         $validated['requirements'] = implode(',', $validated['requirements']);
+        $validated['is_per_semester'] = ($validated['is_per_semester'] == 'true') ?? false;
+        
+        if (empty($validated['privilege'])) {
+            $validated['is_per_semester'] = false;
+        }
 
         $data = array_merge($validated, $dataToMerge);
 
