@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ScholarshipsRequest extends FormRequest
+class CategoriesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,21 +25,7 @@ class ScholarshipsRequest extends FormRequest
     {
         return [
             'id' => 'nullable',
-            'description' => 'required|string',
-            'requirements' => 'nullable|array',
-            'scholarship_category_id' => 'nullable|integer',
-        ];
-    }
-
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-            'scholarship_category_id' => 'Select from scholarship categories.',
+            'category_name' => 'required'
         ];
     }
 }

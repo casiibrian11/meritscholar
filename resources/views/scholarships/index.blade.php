@@ -2,8 +2,7 @@
 
 @section('content')
 <input type="hidden" class="form-control" id="save-route" value="{{route('scholarships-save')}}" readonly>
-<input type="hidden" class="form-control" id="delete-route" value="{{route('scholarships-delete')}}" readonly>
-
+<input type="text" class="form-control" id="delete-route" value="{{route('scholarships-delete')}}" readonly>
 
 <h3 class="mt-2 p-0"><i class="fa fa-book-open"></i> Scholarships ({{ $data['scholarships']->total() }})</h3>
 <ol class="breadcrumb mb-2 text-sm">
@@ -14,9 +13,13 @@
     <div class="col-sm-12 p-0">
         <div class="card p-0 main-body">
             <div class="card-header text-right">
+                <button class="btn btn-xs btn-success p-1 px-3" id="new-category" data-toggle="modal" data-target="#modal"
+                    data-backdrop="static" data-keyboard="false">
+                    <i class="fa fa-plus"></i> ADD NEW CATEGORY
+                </button>
                 <button class="btn btn-xs btn-success add-new p-1 px-3" data-toggle="modal" data-target="#modal"
                     data-backdrop="static" data-keyboard="false">
-                    <i class="fa fa-plus"></i> ADD NEW
+                    <i class="fa fa-plus"></i> ADD NEW SCHOLARSHIP
                 </button>
             </div>
             <div class="card-body">
@@ -26,12 +29,67 @@
                     <a href="?visible=no" type="button" class="d-none btn btn-sm @if (!empty($data['visible']) && $data['visible'] === 'no') btn-success @else btn-outline-secondary @endif">Not visible</a>
                     <a href="?deleted=true" type="button" class="btn btn-sm @if (!empty($data['deleted'])) btn-danger @else btn-outline-secondary @endif">Archived</a>
                 </div>
+                <h4>
+                    <b>
+                        Scholarship Categories
+                    </b>
+                </h4>
+                @if (count($data['categories']) > 0)
+                    <div class="alert alert-info">
+                        <strong> <i class="fa fa-info-sign"></i> NOTE: </strong>
+                        You can <b>DRAG &amp; DROP</b> scholarship categories to update the sequence. The sorting will reflect to the front page.
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-bordered table-hover table-condensed table-striped text-sm">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Scholarship Category</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="sortable">
+                                @foreach ($data['categories'] as $category)
+                                <tr data-id="{{ $category['id'] }}">
+                                    <td id="sort_number_{{ $category['id'] }}">{{ strtoupper($category['sort_number']) }}</td>
+                                    <td>{{ strtoupper($category['category_name']) }}</td>
+                                    <td class="controls">
+                                        <center>
+                                            <a href="#" class="btn btn-sm btn-warning p-0 px-2 edit edit-category float-left"
+                                                data-id="{{ $category['id'] }}">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </center>
+                                    </td>
+                                    <td class="controls">
+                                        <center>
+                                            <a href="#" class="btn btn-sm btn-danger p-0 px-2 delete category-delete float-left"
+                                                data-id="{{ $category['id'] }}">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    @include('layouts.partials._no-record')
+                @endif
+                <h4 class="mt-5">
+                    <b>
+                        List of Scholarships
+                    </b>
+                </h4>
                 @if (count($data['scholarships']) > 0)
                     <div class="table-container">
                     <table class="table table-bordered table-hover table-condensed table-striped text-sm" id="custom">
                         <thead>
                             <tr>
                                 <th>Description</th>
+                                <th>Category</th>
                                 <th>Requirements</th>
                                 <th></th>
                                 <th></th>
@@ -46,6 +104,7 @@
                                 <tr>
                             @endif
                                 <td>{{ strtoupper($row['description']) }}</td>
+                                <td>{{ strtoupper($row['categories']['category_name'] ?? '') }}</td>
                                 <td>
                                     @php
                                         $requirementArray = explode(',', $row['requirements']);
@@ -88,8 +147,9 @@
                                 <td class="controls">
                                     <center>
                                         @if (!$row->trashed())
-                                            <a href="#" class="btn btn-sm btn-warning p-0 px-2 edit float-left"
+                                            <a href="#" class="btn btn-sm btn-warning p-0 px-2 edit edit-scholarship float-left"
                                                 data-id="{{ $row['id'] }}"
+                                                data-scholarship_category_id="{{ $row['scholarship_category_id'] }}"
                                                 data-description="{{ $row['description'] }}"
                                                 data-requirements="{{ $row['requirements'] }}">
                                                 <i class="fa fa-edit"></i>
@@ -101,7 +161,7 @@
                                 <td class="controls">
                                     <center>
                                         @if (!$row->trashed())
-                                            <a href="#" class="btn btn-sm btn-danger p-0 px-2 delete float-left"
+                                            <a href="#" class="btn btn-sm btn-danger p-0 px-2 delete scholarship-delete float-left"
                                                 data-id="{{$row->id}}">
                                                 <i class="fa fa-trash"></i>
                                             </a>
@@ -136,44 +196,99 @@
           <span class="h4" aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="" method="POST" id="form">
-        <div class="modal-body">
-            <p class="alert alert-info small">
-                <strong><i class="fa fa-info-circle"></i> NOTE:</strong> Fields marked with <span class="required">*</span> are required.
-            </p>
-            @csrf
-            <input type="hidden" name="id" id="id" readonly>
-            <div class="form-floating mb-2">
-                <input type="text" id="description" name="description" class="form-control uppercase" 
-                    placeholder="DESCRIPTION" autocomplete="off">
-                    <label for="description">DESCRIPTION <span class="required">*</span></label>
+      <div id="scholarships-category">
+        <form action="" method="POST" id="form">
+            <div class="modal-body">
+                <p class="alert alert-info small">
+                    <strong><i class="fa fa-info-circle"></i> NOTE:</strong> Fields marked with <span class="required">*</span> are required.
+                </p>
+                @csrf
+                <input type="hidden" name="id" id="id" readonly>
+                <div class="form-floating mb-2">
+                    <input type="text" id="description" name="description" class="form-control uppercase" 
+                        placeholder="DESCRIPTION" autocomplete="off">
+                        <label for="description">DESCRIPTION <span class="required">*</span></label>
+                </div>
+                <div class="form-group">
+                    <label class="text-sm">Requirements for this scholarship <span class="required">*</span></label>
+                    <select class="form-control" multiple="multiple" name="requirements[]" id="requirements" style="width:100% !important;height:100px !important;" required>
+                        @foreach($data['requirements'] as $requirement)
+                            <option value="{{ $requirement['id'] }}">{{ strtoupper($requirement['label']) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-floating my-3">
+                    <select class="form-control" name="scholarship_category_id" id="scholarship_category_id" required>
+                        <option value="" disabled selected>SELECT</option>
+                        @foreach($data['categories'] as $category)
+                            <option value="{{ $category['id'] }}">{{ strtoupper($category['category_name']) }}</option>
+                        @endforeach
+                    </select>
+                    <label for="scholarship_category_id">Scholarship Category <span class="required">*</span></label>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="text-sm">Requirements for this scholarship <span class="required">*</span></label>
-                <select class="form-control" multiple="multiple" name="requirements[]" id="requirements" style="width:100% !important;height:100px !important;" required>
-                    @foreach($data['requirements'] as $requirement)
-                        <option value="{{ $requirement['id'] }}">{{ strtoupper($requirement['label']) }}</option>
-                    @endforeach
-                </select>
+            <div class="modal-footer">
+                <button type="button" class="btn close btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+                <button type="submit" class="btn btn-primary btn-save">Save</button>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn close btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary btn-save">Save</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </div>
 
+<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.js"></script>
 <script>
+function loadForm(id)
+{
+    $.ajax({
+        url:'{{ route("category-form") }}',
+        method:'POST',
+        data:{
+            id:id
+        },
+        dataType:'json',
+        success:function(response){
+            $('#scholarships-category').html(response.html);
+            $('.close').addClass('category-close');
+            $('.modal-footer .close').addClass('category-close');
+        }
+    });
+}
+
     $(function() {
         $('#requirements').select2({
             width: 'resolve',
             dropdownParent: $('#modal')
         });
+        $("#sortable").sortable();
+        $("#sortable").on('sortupdate', function(){
+            $('#sortable tr').each( function(e) {
+                var number = ($(this).index() + 1);
+                $.ajax({
+                    url:'{{ route("category-sort") }}',
+                    method:'POST',
+                    data:{
+                        id:$(this).data('id'),
+                        sort_number: number,
+                    },
+                    dataType:'json',
+                    beforeSend:function(){
+                        loader();
+                    },
+                    success:function(){
+                        loaderx();
+                    }
+                });
+                $('#sort_number_'+$(this).data('id')).html(number);
+            });
+        });
 
-        $('.edit').on('click', function(){
+        setTimeout(function(){
+            $('#sortable').trigger('sortupdate');
+        }, 1000);
+
+        $(document).on('click','.edit-scholarship', function(){
             var requirements = $(this).data('requirements');
             var result = requirements.toString().includes(",");
 
@@ -181,7 +296,34 @@
                 requirements = requirements.split(',');
             }
 
-            $('#requirements').val(requirements).trigger("change");
+            $('#requirements').val(requirements);
+            $('#requirements').trigger('change');
+        });
+
+        $(document).on('click','#new-category', function(){
+            $('#scholarships-category').html("");
+            var id = null;
+            $('#save-route').val('{{ route("category-save") }}');
+            loadForm(id);
+        });
+
+        $(document).on('click', '.edit-category', function(){
+            $('#scholarships-category').html("");
+            var id = $(this).data('id');
+            $('#save-route').val('{{ route("category-save") }}');
+            loadForm(id);
+        });
+
+        $('.category-delete').on('click', function(){
+            $('#delete-route').val('{{ route("category-delete") }}');
+        });
+
+        $('.scholarship-delete').on('click', function(){
+            $('#delete-route').val('{{ route("scholarships-delete") }}');
+        });
+
+        $(document).on('click','.category-close', function(){
+            window.location.reload();
         });
     });
 </script>

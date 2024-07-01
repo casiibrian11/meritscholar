@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Libraries\AppHelper;
 use App\Models\Scholarship;
+use App\Models\ScholarshipCategory;
 use App\Models\Requirement;
 use App\Models\SchoolYear;
 use App\Models\ScholarshipOffer;
@@ -38,6 +39,8 @@ class ScholarshipsController extends Controller
         $data['visible'] = $data['visible'] ?? '';
         $data['deleted'] = $data['deleted'] ?? '';
 
+        $data['categories'] = ScholarshipCategory::orderBy('sort_number', 'ASC')->get();
+
         $data['scholarships'] = Scholarship::when(!empty($data['deleted']), function($query){
                                     $query->onlyTrashed();
                                 })
@@ -47,6 +50,7 @@ class ScholarshipsController extends Controller
                                 ->when(!empty($data['visible']) && $data['visible'] == 'no', function($query){
                                     $query->where('visible', false);
                                 })
+                                ->with('categories')
                                 ->orderBy('id', 'DESC')
                                 ->paginate(10);
         

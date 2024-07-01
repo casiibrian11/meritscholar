@@ -26,9 +26,9 @@
     <script src="{{ asset('plugins/js/bootstrap.min.js') }}"></script>
     
     <script src="//cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         var _token = $('meta[name=csrf-token').attr('content');
 
@@ -138,7 +138,7 @@
             const voices = synth.getVoices();
 
             $('#simple').DataTable();
-            $('#custom').DataTable({
+            $('#custom, #custom2').DataTable({
                 ordering:false,
                 info:false,
                 paging:false

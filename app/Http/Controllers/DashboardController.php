@@ -147,7 +147,7 @@ class DashboardController extends Controller
 
             $scholarshipsLabels[] = strtoupper($scholarshipOffers[$offerId]['scholarships']['description']);
             $scholarshipsCounts[] = $scholarshipCount;
-            $scholarshipsBg[] = "#".rand(111111, 999999);
+            $scholarshipsBg[] = "#".rand(444444, 666666);
         }
 
         $data['genderLabels'] = $genderLabels;

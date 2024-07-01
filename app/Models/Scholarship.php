@@ -22,4 +22,9 @@ class Scholarship extends Model
         'active',
         'deleted_at'
     ];
+
+    public function categories()
+    {
+        return $this->belongsTo(ScholarshipCategory::class, 'scholarship_category_id', 'id');
+    }
 }

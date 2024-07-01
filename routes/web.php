@@ -120,6 +120,11 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/delete', [Controllers\ScholarshipsController::class, 'delete'])->name('scholarships-delete');
                 Route::get('/{scholarship}/visibility', [Controllers\ScholarshipsController::class, 'visibility']);
                 Route::get('/{id}/restore', [Controllers\ScholarshipsController::class, 'restore']);
+
+                Route::post('/category/form', [Controllers\CategoriesController::class, 'form'])->name('category-form');
+                Route::post('/category/save', [Controllers\CategoriesController::class, 'save'])->name('category-save');
+                Route::post('/category/delete', [Controllers\CategoriesController::class, 'delete'])->name('category-delete');
+                Route::post('/category/sort', [Controllers\CategoriesController::class, 'sort'])->name('category-sort');
             });
 
             Route::group(['middleware' => ['adminOnly'], 'prefix' => 'requirements'], function () {
