@@ -15,8 +15,9 @@
                         <thead>
                             <tr>
                                 <th>Status</th>
-                                <th style="width:100px;"></th>
-                                <th style="width:100px;"></th>
+                                <th></th>
+                                <th style="width:120px;"></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -24,13 +25,23 @@
                                 <tr>
                                     <td>When an application {{ $value ?? '' }}</td>
                                     <td>
-                                        <a href="/emails/templates/view?template={{ $key }}" target="_blank" class="btn btn-primary w-100 p-0 px-2" style="font-size:12px;">
-                                            <span class="fa fa-folder-open"></span> View
-                                        </a>
+                                        @if (!empty($data['templates'][$key]))
+                                        <span class="badge bg-success w-100">
+                                            This template has been updated.
+                                        @else
+                                        <span class="badge bg-light text-dark w-100 border border-dark">
+                                            This is still using the default format. Click <i class="fa fa-edit"></i> to update.
+                                        @endif
+                                        </span>
                                     </td>
                                     <td>
+                                        <a href="/emails/templates/view?template={{ $key }}" target="_blank" class="btn btn-primary w-100 p-0 px-2" style="font-size:12px;">
+                                            <span class="fa fa-folder-open"></span> View Content
+                                        </a>
+                                    </td>
+                                    <td class="controls">
                                         <a href="/emails/templates/manage?template={{ $key }}" class="btn btn-warning w-100 p-0 px-2" style="font-size:12px;">
-                                            <span class="fa fa-edit"></span> Update
+                                            <span class="fa fa-edit"></span>
                                         </a>
                                     </td>
                                 </tr>

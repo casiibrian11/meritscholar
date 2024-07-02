@@ -25,6 +25,7 @@ use App\Models\Course;
 use App\Models\Note;
 use App\Models\User;
 use App\Models\College;
+use App\Models\EmailTemplate;
 use App\Models\SubmittedRequirement;
 
 
@@ -292,13 +293,17 @@ class ApplicationsController extends Controller
                                 ->where('id', $application['id'])
                                 ->first();
         
-            $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
-            $sy = $application['school_years'];
-            $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
-            $messageContent = "";
-            $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
-            $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} is now under review.<br /><br />You will receive a separate notification regarding the status of your application.";
-            Notifications::notify($application['user_id'], $message, $messageContent);
+            // $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+            // $sy = $application['school_years'];
+            // $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
+            // $messageContent = "";
+            // $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
+            // $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} is now under review.<br /><br />You will receive a separate notification regarding the status of your application.";
+
+            $data['template'] = 'under_review';
+            $template = Brevo::emailTemplate($data, $application['id']);
+            $subject = !empty($template['subject']) ? $template['subject'] : $message;
+            Notifications::notify($application['user_id'], $subject, $template['htmlContent']);
 
             $application->update([ 'under_review' => false ]);
         }
@@ -434,13 +439,13 @@ class ApplicationsController extends Controller
                                 ->where('id', $application['id'])
                                 ->first();
         
-        $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
-        $sy = $application['school_years'];
-        $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
-        $messageContent = "";
-        $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
-        $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} has been {$status}.<br /><br />Login to your account to check for any additional information.";
-        Notifications::notify($application['user_id'], 'Your '.strtolower($message), $messageContent);
+        // $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+        // $sy = $application['school_years'];
+        // $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
+        // $messageContent = "";
+        // $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
+        // $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} has been {$status}.<br /><br />Login to your account to check for any additional information.";
+        // Notifications::notify($application['user_id'], 'Your '.strtolower($message), $messageContent);
 
         return redirect()->back()->with('success', $message." A notification has also been sent to the student.");
     }

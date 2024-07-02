@@ -21,7 +21,12 @@ class EmailsController extends Controller
         $data = $request->all();
         $data['statuses'] = Brevo::$statuses;
 
-        $data['templates'] = EmailTemplate::get();
+        $templates = EmailTemplate::get();
+
+        $data['templates'] = [];
+        foreach ($templates as $template) {
+            $data['templates'][$template['status']] = $template->toArray();
+        }
 
         return view('emails.templates', compact('data'));
     }
@@ -51,9 +56,8 @@ class EmailsController extends Controller
             return redirect('/emails/templates')->with('error', 'Template not recognized.');    
         }
 
-        $user = Auth::user()->toArray();
         $application = Application::first();
-        $data = Brevo::emailTemplate($data, $user, $application['id']);
+        $data = Brevo::emailTemplate($data, $application['id']);
 
         return view("emails.templates.email", compact('data'));
     }

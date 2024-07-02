@@ -184,9 +184,8 @@ class Brevo
         }
     }
 
-    public static function emailTemplate($data, $user, $applicationId = null)
+    public static function emailTemplate($data, $applicationId = null)
     {
-        $name = ucwords($user['first_name'].' '.$user['last_name']);
         $status = $data['template'];
 
         $data['status'] = self::$statuses[$status];
@@ -204,6 +203,7 @@ class Brevo
         $sy = $application['school_years'];
         $semester = "{$sy['semester']} semester";
         $school_year = "S.Y. {$sy['start_year']} - {$sy['end_year']}";
+        $name = ucwords($application['users']['first_name'].' '.$application['users']['last_name']);
 
         if (empty($data['content'])) {
             $data['greetings'] = __('Hi :name,', [ 'name' => $name ]);
@@ -212,8 +212,9 @@ class Brevo
 
             $data['content'] = null;
             $data['default'] = $messageContent;
+            $data['subject'] = null;
         } else {
-            $name = ucwords($application['users']['first_name'].' '.$application['users']['last_name']);
+            $data['subject'] = $data['content']['subject'] ?? null;
             $data['content'] = __($data['content']['email_content'], [
                                     'applicant_name' => $name,
                                     'semester' => $semester,
@@ -221,9 +222,11 @@ class Brevo
                                     'scholarship' => $scholarship,
                                     'status' => $status
                                 ]);
-
-            $data['application'] = $application->toArray();
+            $data['default'] = null;
         }
+
+        $data['application'] = $application->toArray();
+        $data['htmlContent'] = view("emails.templates.email", compact('data'))->render();
 
         return $data;
     }
