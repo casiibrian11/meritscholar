@@ -189,7 +189,6 @@ class Brevo
         $name = ucwords($user['first_name'].' '.$user['last_name']);
         $status = $data['template'];
 
-        $data['greetings'] = __('Hi :name,', [ 'name' => $name ]);
         $data['status'] = self::$statuses[$status];
         $data['content'] = EmailTemplate::where('status', $data['template'])->first();
 
@@ -200,16 +199,30 @@ class Brevo
                                     $query->where('id', $applicationId);
                                 })
                                 ->first();
+        
+        $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+        $sy = $application['school_years'];
+        $semester = "{$sy['semester']} semester";
+        $school_year = "S.Y. {$sy['start_year']} - {$sy['end_year']}";
 
         if (empty($data['content'])) {
-            $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
-            $sy = $application['school_years'];
-            $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
+            $data['greetings'] = __('Hi :name,', [ 'name' => $name ]);
             $messageContent = "";
-            $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} {$data['status']}.";
+            $messageContent .= "Your application for <b>{$scholarship}</b> for the {$semester} of the {$school_year} {$data['status']}.";
 
             $data['content'] = null;
             $data['default'] = $messageContent;
+        } else {
+            $name = ucwords($application['users']['first_name'].' '.$application['users']['last_name']);
+            $data['content'] = __($data['content']['email_content'], [
+                                    'applicant_name' => $name,
+                                    'semester' => $semester,
+                                    'school_year' => $school_year,
+                                    'scholarship' => $scholarship,
+                                    'status' => $status
+                                ]);
+
+            $data['application'] = $application->toArray();
         }
 
         return $data;

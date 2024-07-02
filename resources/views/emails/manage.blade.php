@@ -1,7 +1,6 @@
 @extends('layouts.admin')
 
 @section('content')
-<input type="hidden" id="save-route" value="{{ route('announcements-save') }}" readonly>
 <h3 class="mt-2 p-0"><i class="fa fa-envelope"></i> Email Templates</h3>
 <ol class="breadcrumb mb-2 text-sm">
     <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
@@ -16,25 +15,52 @@
                 </a>
             </div>
             <div class="card-body">
-            <form action="" method="POST" id="form">
+            <form action="{{ route('email-template-save') }}" method="POST" id="email-template">
                 <div class="modal-body">
-                    <p class="alert alert-primary small">
-                        <i class="fa fa-info-circle"></i> This email notification template will be sent to the user when their application is <b>{{ $data['statuses'][$data['template']] }}</b>
+                    <p class="alert alert-primary h5">
+                        <i class="fa fa-info-circle"></i> This email notification template will be sent to the user when their application <b>{{ $data['statuses'][$data['template']] }}</b>
                     </p>
-                    <p class="alert alert-info small">
-                        <strong><i class="fa fa-info-circle"></i> NOTE:</strong> Fields marked with <span class="required">*</span> are required.
-                    </p>
+                    <div class="alert alert-info small">
+                        <strong><i class="fa fa-info-circle"></i> Use the following wildcard names for dynamic email contents;</strong>
+                        <ul class="m-0 my-2">
+                            <li><span class="badge bg-light text-dark">:applicant_name</span> - will display the applicant's first name and last name</li>
+                            <li><span class="badge bg-light text-dark">:scholarship</span> - scholarship that the applicant applied for</li>
+                            <li><span class="badge bg-light text-dark">:semester</span></li>
+                            <li><span class="badge bg-light text-dark">:school_year</span> - school year of the scholarship applied for</li>
+                            <li><span class="badge bg-light text-dark">:status</span> - status of the application eg. <b>submitted</b>, <b>under review</b>, <b>approved</b>, <b>denied</b> </li>
+                        </ul>
+                        Example:
+                        <div class="alert alert-light">
+                            Hi :applicant_name,<br /><br />
+                            Your application for the :scholarship for the :semester of the :school_year is|has been :status.
+                        </div>
+                        Output:
+                        <div class="alert alert-light">
+                            Hi Firstname Lastname,<br /><br />
+                            Your application for the ACADEMIC SCHOLARSHIP for the 1st semester of the S.Y. 2024-2025 is|has been 
+                            @if ($data['template'] == 'completed')
+                                submitted.
+                            @else
+                            {{ $data['template'] }}.
+                            @endif
+                        </div>
+                    </div>
                     @csrf
-                    <input type="hidden" name="id" id="id" readonly>
-                    <input type="hidden" name="email_content" id="email_content" readonly>
+                    <input type="hidden" name="email_content" id="email_content" value="{{ $data['email']['email_content'] ?? '' }}" readonly>
+                    <input type="hidden" name="status" id="status" value="{{ $data['template'] }}" readonly>
+                    <div class="form-group mb-2">
+                        <label for="content">Email Subject <span class="required">*</span></label>
+                        <input type="text" name="subject" id="subject" class="form-control"
+                            placeholder="Email subject..." value="{{ $data['email']['subject'] ?? '' }}" required>
+                    </div>
                     <div class="form-group mb-2">
                         <label for="content">Content <span class="required">*</span></label>
                         <textarea class="form-control" placeholder="Content to post as announcement..." 
-                            style="height:100px;" id="editor">{{ old('description', '') }}</textarea>
+                            style="height:100px;" id="editor">{{ old('email_content', '') }}</textarea>
                     </div>
                 </div>
                 <div class="modal-footer mt-3">
-                    <button type="button" class="btn btn-primary save-announcement">Save</button>
+                    <button type="submit" class="btn btn-primary save-template">Save</button>
                 </div>
             </form>
             </div>
@@ -48,35 +74,16 @@
 
     $(function(){
 
-        @if (!empty($data['announcement']))
-            var content = $('#content').val();
-            var visible = '{{ $data["announcement"]["visible"] }}';
-            var isVisible = '{{ (boolean)$data["announcement"]["visible"] }}';
+        @if (!empty($data['email']))
+            var content = $('#email_content').val();
             CKEDITOR.instances['editor'].setData(content);
-            $('#visible').val(visible);
-
-            if (isVisible) {
-                $('#is_visible').prop('checked', true);
-            } else {
-                $('#is_visible').prop('checked', false);
-            }
-
-            $('#id').val('{{ $data["announcement"]["id"] }}');
-            $('#title').val('{{ $data["announcement"]["title"] }}');
         @endif
 
-        $('.save-announcement').on('click', function(){
+        $('.save-template').on('click', function(){
             var editorText = CKEDITOR.instances.editor.getData();
-            var isVisible = $('#is_visible').prop('checked');
 
-            if (isVisible) {
-                $('#visible').val(1);
-            } else {
-                $('#visible').val(0);
-            }
-
-            $('#content').val(editorText);
-            $('#form').trigger('submit');
+            $('#email_content').val(editorText);
+            $('#email-template').trigger('submit');
         });
     });
 </script>

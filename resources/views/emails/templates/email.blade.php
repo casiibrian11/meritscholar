@@ -21,7 +21,7 @@
             {{ config('mail')['from']['name'] }}
         </p>
     @else
-
+        {!! $data['content'] !!}
     @endif
 
 @endsection
