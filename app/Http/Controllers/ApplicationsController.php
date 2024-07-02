@@ -293,13 +293,6 @@ class ApplicationsController extends Controller
                                 ->where('id', $application['id'])
                                 ->first();
         
-            // $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
-            // $sy = $application['school_years'];
-            // $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
-            // $messageContent = "";
-            // $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
-            // $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} is now under review.<br /><br />You will receive a separate notification regarding the status of your application.";
-
             $data['template'] = 'under_review';
             $template = Brevo::emailTemplate($data, $application['id']);
             $subject = !empty($template['subject']) ? $template['subject'] : $message;
@@ -428,9 +421,11 @@ class ApplicationsController extends Controller
         if ($approved) {
             $message = "Application has been approved.";
             $status = "approved";
+            $data['template'] = $status;
         } else {
             $message = "Application has been denied.";
             $status = "denied";
+            $data['template'] = $status;
         }
 
         $application = Application::with('scholarship_offers')
@@ -439,13 +434,9 @@ class ApplicationsController extends Controller
                                 ->where('id', $application['id'])
                                 ->first();
         
-        // $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
-        // $sy = $application['school_years'];
-        // $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
-        // $messageContent = "";
-        // $messageContent .= "Hi ".ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']).", <br /><br />";
-        // $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} has been {$status}.<br /><br />Login to your account to check for any additional information.";
-        // Notifications::notify($application['user_id'], 'Your '.strtolower($message), $messageContent);
+        $template = Brevo::emailTemplate($data, $application['id']);
+        $subject = !empty($template['subject']) ? $template['subject'] : 'Your '.strtolower($message);
+        Notifications::notify($application['user_id'], $subject, $template['htmlContent']);
 
         return redirect()->back()->with('success', $message." A notification has also been sent to the student.");
     }

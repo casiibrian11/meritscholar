@@ -502,18 +502,22 @@ class ScholarshipsController extends Controller
 
         broadcast(new NewApplication());
 
-        $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+        // Dynamic email template notification
+        $data['template'] = 'completed';
+        $template = Brevo::emailTemplate($data, $application['id']);
+
+        $name = ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']);
         $sy = $application['school_years'];
         $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
-        $name = ucwords($application['users']['first_name']).' '.ucwords($application['users']['last_name']);
-        $messageContent = "";
-        $messageContent .= "Hi {$name}, <br /><br />";
-        $messageContent .= "We have received your application for <b>{$scholarship}</b> {$semester}. You will receive a separate email notification regarding the status of your application.";
-        Notifications::notify($application['user_id'], "We received your application for {$scholarship}", $messageContent);
+        $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+        $subject = "We received your application for {$scholarship}";
+        $subject = !empty($template['subject']) ? $template['subject'] : $subject;
+        
+        Notifications::notify($application['user_id'], $subject, $template['htmlContent']);
 
+        // Notification to admin | support, depending on the settings
         $messageContentForNotification = "<b>{$name}</b> submitted an application for <b>{$scholarship}</b> {$semester}. Login to your account to review the application. ";
         self::notify($messageContentForNotification);
-
         return redirect()->back()->with('success', "You're application has been submitted. Wait for notifications to your email regarding your application.");
     }
 
