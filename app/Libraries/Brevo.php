@@ -13,9 +13,20 @@ use Brevo\Client\Model\CreateContact;
 use Brevo\Client\Model\RemoveContactFromList;
 use Brevo\Client\Model\SendTransacSms;
 
+use Illuminate\Support\Facades\Auth;
+use App\Models\EmailTemplate;
+use App\Models\Application;
+
 class Brevo
 {
     protected $config;
+
+    public static array $statuses = [
+        'completed' => 'has been submitted',
+        'under_review' => 'is under review',
+        'denied' => 'has been denied',
+        'approved' => 'has been approved',
+    ];
 
     public function __construct()
     {
@@ -171,5 +182,36 @@ class Brevo
             $result['error'] = 'Exception when calling TransactionalSMSApi->sendTransacSms: '. $e->getMessage();
             return $result;
         }
+    }
+
+    public static function emailTemplate($data, $user, $applicationId = null)
+    {
+        $name = ucwords($user['first_name'].' '.$user['last_name']);
+        $status = $data['template'];
+
+        $data['greetings'] = __('Hi :name,', [ 'name' => $name ]);
+        $data['status'] = self::$statuses[$status];
+        $data['content'] = EmailTemplate::where('status', $data['template'])->first();
+
+        $application = Application::with('scholarship_offers')
+                                ->with('users')
+                                ->with('school_years')
+                                ->when(!empty($applicationId), function($query) use($applicationId){
+                                    $query->where('id', $applicationId);
+                                })
+                                ->first();
+
+        if (empty($data['content'])) {
+            $scholarship = strtoupper($application['scholarship_offers']['scholarships']['description']);
+            $sy = $application['school_years'];
+            $semester = "for the <b>{$sy['semester']} semester of S.Y. {$sy['start_year']} - {$sy['end_year']}</b>";
+            $messageContent = "";
+            $messageContent .= "Your application for <b>{$scholarship}</b> {$semester} {$data['status']}.";
+
+            $data['content'] = null;
+            $data['default'] = $messageContent;
+        }
+
+        return $data;
     }
 }

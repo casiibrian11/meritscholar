@@ -69,6 +69,9 @@ Route::middleware(['auth', 'active'])->group(function () {
 
             Route::group(['middleware' => ['support'], 'prefix' => 'emails'], function () {
                 Route::get('/', [Controllers\EmailsController::class, 'emailReport']);
+                Route::get('/templates', [Controllers\EmailsController::class, 'index']);
+                Route::get('/templates/manage', [Controllers\EmailsController::class, 'manage']);
+                Route::get('/templates/view', [Controllers\EmailsController::class, 'view']);
             });
 
             Route::group(['middleware' => ['support'], 'prefix' => 'announcements'], function () {
