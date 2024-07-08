@@ -583,7 +583,7 @@ table thead tr th{
                                     <a class="nav-link" href="/scholarships"><i class="fas fa-book-open"></i>&nbsp;Scholarships</a>
                                 </nav>
                             </div>
-                            <div class="collapse d-none" id="settings" aria-labelledby="headingOne"
+                            <div class="collapse" id="settings" aria-labelledby="headingOne"
                                 data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="/emails/templates"><i class="fas fa-envelope"></i>&nbsp;Email&nbsp;Templates</a>
